@@ -161,10 +161,10 @@ app.post('/api/auth/login', async (req, res) => {
     const result = await execute("SELECT * FROM users WHERE username = $1", [username]);
     const user = result.rows[0];
     
-    if (!user) return res.status(400).json({ error: "Invalid credentials" });
+    if (!user) return res.status(400).json({ error: "Account not found. Please sign up first." });
 
     const valid = await bcrypt.compare(password, user.password_hash);
-    if (!valid) return res.status(400).json({ error: "Invalid credentials" });
+    if (!valid) return res.status(400).json({ error: "Incorrect password." });
 
     const token = jwt.sign({ id: user.id, username: user.username }, JWT_SECRET, { expiresIn: '24h' });
     res.json({ token, user: { id: user.id, username: user.username } });
