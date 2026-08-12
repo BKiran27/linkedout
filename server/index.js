@@ -2,6 +2,7 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const { Pool } = require('pg');
+const sqlite3 = require('sqlite3').verbose();
 const http = require('http');
 const { Server } = require('socket.io');
 const bcrypt = require('bcryptjs');
@@ -20,32 +21,68 @@ app.use(express.json());
 const port = process.env.PORT || 3001;
 const JWT_SECRET = process.env.JWT_SECRET || 'super-secret-linkedout-key';
 
-if (!process.env.DATABASE_URL) {
-  console.error("FATAL ERROR: DATABASE_URL environment variable is not set.");
-  console.error("Please create a .env file and add your PostgreSQL connection string.");
-  process.exit(1);
+const usePg = !!process.env.DATABASE_URL;
+let pool;
+let db;
+
+if (usePg) {
+  pool = new Pool({
+    connectionString: process.env.DATABASE_URL,
+    ssl: { rejectUnauthorized: false }
+  });
+} else {
+  db = new sqlite3.Database('./linkedout.db', (err) => {
+    if (err) console.error("Error connecting to SQLite:", err);
+  });
 }
 
-// Initialize PostgreSQL Database
-const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
-  ssl: { rejectUnauthorized: false } // Required for most cloud DBs like Neon/Supabase
-});
+// A simple DB wrapper to abstract pg vs sqlite3
+const execute = async (sql, params = []) => {
+  if (usePg) {
+    const result = await pool.query(sql, params);
+    return { rows: result.rows, insertId: result.rows[0]?.id };
+  } else {
+    // Convert Postgres $1, $2 syntax to SQLite ?, ? syntax
+    let sqliteSql = sql;
+    let i = 1;
+    while(sqliteSql.includes(`$${i}`)) {
+      sqliteSql = sqliteSql.replace(`$${i}`, '?');
+      i++;
+    }
+    // Remove RETURNING id, which is postgres specific for inserts
+    sqliteSql = sqliteSql.replace(/RETURNING .+/i, '');
+
+    return new Promise((resolve, reject) => {
+      if (sqliteSql.trim().toUpperCase().startsWith("SELECT")) {
+        db.all(sqliteSql, params, (err, rows) => {
+          if (err) reject(err);
+          else resolve({ rows });
+        });
+      } else {
+        db.run(sqliteSql, params, function(err) {
+          if (err) reject(err);
+          else resolve({ rows: [], insertId: this.lastID });
+        });
+      }
+    });
+  }
+};
 
 async function initDB() {
   try {
-    await pool.query(`
+    const serialType = usePg ? 'SERIAL' : 'INTEGER';
+    await execute(`
       CREATE TABLE IF NOT EXISTS users (
-        id SERIAL PRIMARY KEY,
+        id ${serialType} PRIMARY KEY,
         username VARCHAR(255) UNIQUE NOT NULL,
         password_hash VARCHAR(255) NOT NULL,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       )
     `);
 
-    await pool.query(`
+    await execute(`
       CREATE TABLE IF NOT EXISTS posts (
-        id SERIAL PRIMARY KEY,
+        id ${serialType} PRIMARY KEY,
         author VARCHAR(255),
         role VARCHAR(255),
         duration VARCHAR(255),
@@ -59,7 +96,7 @@ async function initDB() {
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       )
     `);
-    console.log('Connected to PostgreSQL database and verified tables.');
+    console.log(`Connected to ${usePg ? 'PostgreSQL' : 'SQLite'} database and verified tables.`);
   } catch (err) {
     console.error('Error initializing database:', err);
   }
@@ -102,15 +139,15 @@ app.post('/api/auth/register', async (req, res) => {
 
   try {
     const hash = await bcrypt.hash(password, 10);
-    const result = await pool.query(
-      "INSERT INTO users (username, password_hash) VALUES ($1, $2) RETURNING id, username", 
+    const result = await execute(
+      "INSERT INTO users (username, password_hash) VALUES ($1, $2) RETURNING id", 
       [username, hash]
     );
-    const user = result.rows[0];
-    const token = jwt.sign({ id: user.id, username: user.username }, JWT_SECRET, { expiresIn: '24h' });
-    res.json({ token, user: { id: user.id, username: user.username } });
+    const id = result.insertId;
+    const token = jwt.sign({ id, username }, JWT_SECRET, { expiresIn: '24h' });
+    res.json({ token, user: { id, username } });
   } catch (err) {
-    if (err.code === '23505') { // Postgres unique violation
+    if (err.code === '23505' || err.message.includes('UNIQUE')) { 
       res.status(400).json({ error: "Username already exists" });
     } else {
       res.status(500).json({ error: err.message });
@@ -121,7 +158,7 @@ app.post('/api/auth/register', async (req, res) => {
 app.post('/api/auth/login', async (req, res) => {
   const { username, password } = req.body;
   try {
-    const result = await pool.query("SELECT * FROM users WHERE username = $1", [username]);
+    const result = await execute("SELECT * FROM users WHERE username = $1", [username]);
     const user = result.rows[0];
     
     if (!user) return res.status(400).json({ error: "Invalid credentials" });
@@ -138,7 +175,7 @@ app.post('/api/auth/login', async (req, res) => {
 
 // Posts
 const getPostWithDetails = async (postId) => {
-  const res = await pool.query(`
+  const res = await execute(`
     SELECT p.*, u.username as real_username 
     FROM posts p 
     LEFT JOIN users u ON p.user_id = u.id 
@@ -146,7 +183,7 @@ const getPostWithDetails = async (postId) => {
   
   let row = res.rows[0];
   if (row && row.repost_id) {
-    const origRes = await pool.query(`SELECT p.*, u.username as real_username FROM posts p LEFT JOIN users u ON p.user_id = u.id WHERE p.id = $1`, [row.repost_id]);
+    const origRes = await execute(`SELECT p.*, u.username as real_username FROM posts p LEFT JOIN users u ON p.user_id = u.id WHERE p.id = $1`, [row.repost_id]);
     row.original_post = origRes.rows[0];
   }
   return row;
@@ -154,7 +191,7 @@ const getPostWithDetails = async (postId) => {
 
 app.get('/api/posts', async (req, res) => {
   try {
-    const result = await pool.query(`
+    const result = await execute(`
       SELECT p.*, u.username as real_username 
       FROM posts p 
       LEFT JOIN users u ON p.user_id = u.id 
@@ -169,7 +206,7 @@ app.get('/api/posts', async (req, res) => {
 app.get('/api/posts/company/:companyName', async (req, res) => {
   try {
     const companyName = req.params.companyName;
-    const result = await pool.query(`
+    const result = await execute(`
       SELECT p.*, u.username as real_username 
       FROM posts p 
       LEFT JOIN users u ON p.user_id = u.id 
@@ -209,8 +246,8 @@ app.post('/api/posts', optionalAuth, async (req, res) => {
       repost_id || null
     ];
 
-    const result = await pool.query(sql, params);
-    const fullPost = await getPostWithDetails(result.rows[0].id);
+    const result = await execute(sql, params);
+    const fullPost = await getPostWithDetails(result.insertId);
     
     io.emit('new_post', fullPost); // Broadcast real-time
     res.json(fullPost);
@@ -222,7 +259,7 @@ app.post('/api/posts', optionalAuth, async (req, res) => {
 app.post('/api/posts/:id/like', async (req, res) => {
   try {
     const id = req.params.id;
-    await pool.query("UPDATE posts SET likes = likes + 1 WHERE id = $1", [id]);
+    await execute("UPDATE posts SET likes = likes + 1 WHERE id = $1", [id]);
     res.json({ message: "Post liked" });
   } catch (err) {
     res.status(500).json({ error: err.message });
