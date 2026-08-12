@@ -3,8 +3,9 @@ import { BrowserRouter as Router, Routes, Route, Link, useParams, useNavigate } 
 import { io } from 'socket.io-client';
 import './App.css';
 
-const API_URL = 'http://localhost:3001/api';
-const socket = io('http://localhost:3001');
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001/api';
+const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || 'http://localhost:3001';
+const socket = io(SOCKET_URL);
 
 // --- Contexts ---
 const AuthContext = createContext(null);

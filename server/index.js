@@ -1,6 +1,7 @@
+require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
-const sqlite3 = require('sqlite3').verbose();
+const { Pool } = require('pg');
 const http = require('http');
 const { Server } = require('socket.io');
 const bcrypt = require('bcryptjs');
@@ -8,49 +9,62 @@ const jwt = require('jsonwebtoken');
 
 const app = express();
 const server = http.createServer(app);
+
+// Update CORS to allow all for dev, or specify Vercel domains for prod
 const io = new Server(server, {
   cors: { origin: "*", methods: ["GET", "POST"] }
 });
-const port = 3001;
-const JWT_SECRET = 'super-secret-linkedout-key'; // For MVP purposes
-
-app.use(cors());
+app.use(cors({ origin: "*" }));
 app.use(express.json());
 
-// Initialize SQLite Database
-const db = new sqlite3.Database('./linkedout.db', (err) => {
-  if (err) {
-    console.error('Error opening database', err.message);
-  } else {
-    console.log('Connected to the SQLite database.');
-    
-    // Create users table
-    db.run(`CREATE TABLE IF NOT EXISTS users (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      username TEXT UNIQUE,
-      password_hash TEXT,
-      created_at DATETIME DEFAULT CURRENT_TIMESTAMP
-    )`);
+const port = process.env.PORT || 3001;
+const JWT_SECRET = process.env.JWT_SECRET || 'super-secret-linkedout-key';
 
-    // Create posts table if not exists (from previous phases)
-    db.run(`CREATE TABLE IF NOT EXISTS posts (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      author TEXT,
-      role TEXT,
-      duration TEXT,
-      company TEXT,
-      content TEXT,
-      likes INTEGER DEFAULT 0,
-      comments INTEGER DEFAULT 0,
-      created_at DATETIME DEFAULT CURRENT_TIMESTAMP
-    )`, () => {
-      // Lazy migrations for phase 4
-      db.run("ALTER TABLE posts ADD COLUMN user_id INTEGER", () => {});
-      db.run("ALTER TABLE posts ADD COLUMN repost_id INTEGER", () => {});
-      db.run("ALTER TABLE posts ADD COLUMN is_anonymous INTEGER DEFAULT 1", () => {});
-    });
-  }
+if (!process.env.DATABASE_URL) {
+  console.error("FATAL ERROR: DATABASE_URL environment variable is not set.");
+  console.error("Please create a .env file and add your PostgreSQL connection string.");
+  process.exit(1);
+}
+
+// Initialize PostgreSQL Database
+const pool = new Pool({
+  connectionString: process.env.DATABASE_URL,
+  ssl: { rejectUnauthorized: false } // Required for most cloud DBs like Neon/Supabase
 });
+
+async function initDB() {
+  try {
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS users (
+        id SERIAL PRIMARY KEY,
+        username VARCHAR(255) UNIQUE NOT NULL,
+        password_hash VARCHAR(255) NOT NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      )
+    `);
+
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS posts (
+        id SERIAL PRIMARY KEY,
+        author VARCHAR(255),
+        role VARCHAR(255),
+        duration VARCHAR(255),
+        company VARCHAR(255),
+        content TEXT,
+        likes INTEGER DEFAULT 0,
+        comments INTEGER DEFAULT 0,
+        user_id INTEGER REFERENCES users(id),
+        is_anonymous INTEGER DEFAULT 1,
+        repost_id INTEGER REFERENCES posts(id),
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      )
+    `);
+    console.log('Connected to PostgreSQL database and verified tables.');
+  } catch (err) {
+    console.error('Error initializing database:', err);
+  }
+}
+initDB();
 
 // Middleware
 const authenticateToken = (req, res, next) => {
@@ -66,7 +80,6 @@ const authenticateToken = (req, res, next) => {
   });
 };
 
-// Optional auth middleware (doesn't fail if no token)
 const optionalAuth = (req, res, next) => {
   const authHeader = req.headers['authorization'];
   const token = authHeader && authHeader.split(' ')[1];
@@ -89,22 +102,28 @@ app.post('/api/auth/register', async (req, res) => {
 
   try {
     const hash = await bcrypt.hash(password, 10);
-    db.run("INSERT INTO users (username, password_hash) VALUES (?, ?)", [username, hash], function(err) {
-      if (err) {
-        return res.status(400).json({ error: "Username already exists" });
-      }
-      const token = jwt.sign({ id: this.lastID, username }, JWT_SECRET, { expiresIn: '24h' });
-      res.json({ token, user: { id: this.lastID, username } });
-    });
+    const result = await pool.query(
+      "INSERT INTO users (username, password_hash) VALUES ($1, $2) RETURNING id, username", 
+      [username, hash]
+    );
+    const user = result.rows[0];
+    const token = jwt.sign({ id: user.id, username: user.username }, JWT_SECRET, { expiresIn: '24h' });
+    res.json({ token, user: { id: user.id, username: user.username } });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    if (err.code === '23505') { // Postgres unique violation
+      res.status(400).json({ error: "Username already exists" });
+    } else {
+      res.status(500).json({ error: err.message });
+    }
   }
 });
 
-app.post('/api/auth/login', (req, res) => {
+app.post('/api/auth/login', async (req, res) => {
   const { username, password } = req.body;
-  db.get("SELECT * FROM users WHERE username = ?", [username], async (err, user) => {
-    if (err) return res.status(500).json({ error: err.message });
+  try {
+    const result = await pool.query("SELECT * FROM users WHERE username = $1", [username]);
+    const user = result.rows[0];
+    
     if (!user) return res.status(400).json({ error: "Invalid credentials" });
 
     const valid = await bcrypt.compare(password, user.password_hash);
@@ -112,54 +131,58 @@ app.post('/api/auth/login', (req, res) => {
 
     const token = jwt.sign({ id: user.id, username: user.username }, JWT_SECRET, { expiresIn: '24h' });
     res.json({ token, user: { id: user.id, username: user.username } });
-  });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 });
 
 // Posts
-const getPostWithDetails = (postId, callback) => {
-  db.get(`
+const getPostWithDetails = async (postId) => {
+  const res = await pool.query(`
     SELECT p.*, u.username as real_username 
     FROM posts p 
     LEFT JOIN users u ON p.user_id = u.id 
-    WHERE p.id = ?`, [postId], (err, row) => {
-      if (err) return callback(err);
-      
-      // If it's a repost, fetch the original post too
-      if (row && row.repost_id) {
-        db.get(`SELECT p.*, u.username as real_username FROM posts p LEFT JOIN users u ON p.user_id = u.id WHERE p.id = ?`, [row.repost_id], (err, originalPost) => {
-          row.original_post = originalPost;
-          callback(null, row);
-        });
-      } else {
-        callback(null, row);
-      }
-  });
-}
+    WHERE p.id = $1`, [postId]);
+  
+  let row = res.rows[0];
+  if (row && row.repost_id) {
+    const origRes = await pool.query(`SELECT p.*, u.username as real_username FROM posts p LEFT JOIN users u ON p.user_id = u.id WHERE p.id = $1`, [row.repost_id]);
+    row.original_post = origRes.rows[0];
+  }
+  return row;
+};
 
-app.get('/api/posts', (req, res) => {
-  db.all(`
-    SELECT p.*, u.username as real_username 
-    FROM posts p 
-    LEFT JOIN users u ON p.user_id = u.id 
-    ORDER BY p.id DESC
-  `, [], (err, rows) => {
-    if (err) return res.status(500).json({ error: err.message });
-    
-    // For MVP simplicity, we won't deeply resolve all reposts in the list query 
-    // to avoid complex JOINs, but we will for individual posts.
-    res.json(rows);
-  });
+app.get('/api/posts', async (req, res) => {
+  try {
+    const result = await pool.query(`
+      SELECT p.*, u.username as real_username 
+      FROM posts p 
+      LEFT JOIN users u ON p.user_id = u.id 
+      ORDER BY p.id DESC
+    `);
+    res.json(result.rows);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 });
 
-app.get('/api/posts/company/:companyName', (req, res) => {
-  const companyName = req.params.companyName;
-  db.all("SELECT p.*, u.username as real_username FROM posts p LEFT JOIN users u ON p.user_id = u.id WHERE p.company = ? ORDER BY p.id DESC", [companyName], (err, rows) => {
-    if (err) return res.status(500).json({ error: err.message });
-    res.json(rows);
-  });
+app.get('/api/posts/company/:companyName', async (req, res) => {
+  try {
+    const companyName = req.params.companyName;
+    const result = await pool.query(`
+      SELECT p.*, u.username as real_username 
+      FROM posts p 
+      LEFT JOIN users u ON p.user_id = u.id 
+      WHERE p.company = $1 
+      ORDER BY p.id DESC
+    `, [companyName]);
+    res.json(result.rows);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 });
 
-app.post('/api/posts', optionalAuth, (req, res) => {
+app.post('/api/posts', optionalAuth, async (req, res) => {
   const { author, role, duration, company, content, is_anonymous, repost_id } = req.body;
   const user_id = req.user ? req.user.id : null;
   const anonymousFlag = is_anonymous === undefined ? 1 : (is_anonymous ? 1 : 0);
@@ -168,39 +191,42 @@ app.post('/api/posts', optionalAuth, (req, res) => {
     return res.status(400).json({ error: "Company is required for new posts" });
   }
 
-  const sql = `INSERT INTO posts (author, role, duration, company, content, likes, comments, user_id, is_anonymous, repost_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
-  const params = [
-    author || `Anonymous${Math.floor(Math.random() * 1000)}`,
-    role || "Employee",
-    duration || "Unknown",
-    company || "Unknown",
-    content || "",
-    0, 0,
-    user_id,
-    anonymousFlag,
-    repost_id || null
-  ];
+  try {
+    const sql = `
+      INSERT INTO posts (author, role, duration, company, content, likes, comments, user_id, is_anonymous, repost_id) 
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) 
+      RETURNING id
+    `;
+    const params = [
+      author || `Anonymous${Math.floor(Math.random() * 1000)}`,
+      role || "Employee",
+      duration || "Unknown",
+      company || "Unknown",
+      content || "",
+      0, 0,
+      user_id,
+      anonymousFlag,
+      repost_id || null
+    ];
 
-  db.run(sql, params, function(err) {
-    if (err) return res.status(500).json({ error: err.message });
+    const result = await pool.query(sql, params);
+    const fullPost = await getPostWithDetails(result.rows[0].id);
     
-    getPostWithDetails(this.lastID, (err, fullPost) => {
-      if (!err && fullPost) {
-        io.emit('new_post', fullPost); // Broadcast real-time
-        res.json(fullPost);
-      } else {
-        res.status(500).json({ error: "Failed to retrieve saved post" });
-      }
-    });
-  });
+    io.emit('new_post', fullPost); // Broadcast real-time
+    res.json(fullPost);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 });
 
-app.post('/api/posts/:id/like', (req, res) => {
-  const id = req.params.id;
-  db.run("UPDATE posts SET likes = likes + 1 WHERE id = ?", id, function(err) {
-    if (err) return res.status(500).json({ error: err.message });
-    res.json({ message: "Post liked", changes: this.changes });
-  });
+app.post('/api/posts/:id/like', async (req, res) => {
+  try {
+    const id = req.params.id;
+    await pool.query("UPDATE posts SET likes = likes + 1 WHERE id = $1", [id]);
+    res.json({ message: "Post liked" });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 });
 
 // Socket.io
@@ -212,5 +238,5 @@ io.on('connection', (socket) => {
 });
 
 server.listen(port, () => {
-  console.log(`LinkedOut backend running at http://localhost:${port}`);
+  console.log(`LinkedOut production backend running on port ${port}`);
 });
