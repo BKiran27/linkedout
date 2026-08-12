@@ -12,12 +12,19 @@ const AuthContext = createContext(null);
 const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(JSON.parse(localStorage.getItem('user')) || null);
   const [token, setToken] = useState(localStorage.getItem('token') || null);
+  const [toast, setToast] = useState(null);
+
+  const showToast = (message, type = 'success') => {
+    setToast({ message, type });
+    setTimeout(() => setToast(null), 3000);
+  };
 
   const login = (userData, jwtToken) => {
     setUser(userData);
     setToken(jwtToken);
     localStorage.setItem('user', JSON.stringify(userData));
     localStorage.setItem('token', jwtToken);
+    showToast(`Welcome back, ${userData.username}!`);
   };
 
   const logout = () => {
@@ -25,11 +32,17 @@ const AuthProvider = ({ children }) => {
     setToken(null);
     localStorage.removeItem('user');
     localStorage.removeItem('token');
+    showToast('Logged out successfully.', 'info');
   };
 
   return (
-    <AuthContext.Provider value={{ user, token, login, logout }}>
+    <AuthContext.Provider value={{ user, token, login, logout, showToast }}>
       {children}
+      {toast && (
+        <div className={`toast toast-${toast.type} animate-slide-up`}>
+          {toast.message}
+        </div>
+      )}
     </AuthContext.Provider>
   );
 };
@@ -93,7 +106,7 @@ const AuthModal = ({ type: initialType, onClose }) => {
         setError(data.error);
       }
     } catch (err) {
-      setError("An error occurred");
+      setError("An error occurred. Please try again.");
     }
   };
 
@@ -101,19 +114,40 @@ const AuthModal = ({ type: initialType, onClose }) => {
     <div className="modal-overlay" onClick={onClose}>
       <div className="modal-content glass-panel" onClick={e => e.stopPropagation()}>
         <button className="close-btn" onClick={onClose}>&times;</button>
-        <h2>{type === 'login' ? 'Welcome Back' : 'Join the Resistance'}</h2>
-        {error && <div className="error-msg">{error}</div>}
+        <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
+          <div className="logo" style={{ justifyContent: 'center', marginBottom: '1rem', fontSize: '2rem' }}>
+            Linked<span className="logo-accent">Out</span>
+          </div>
+          <h2 style={{ fontSize: '1.5rem', margin: 0 }}>{type === 'login' ? 'Welcome Back' : 'Join the Resistance'}</h2>
+          <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', marginTop: '0.5rem' }}>
+            {type === 'login' ? 'Sign in to amplify stories and post your own.' : 'Your identity remains protected. Always.'}
+          </p>
+        </div>
+        
+        {error && <div className="error-msg animate-fade-in">{error}</div>}
+        
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', marginBottom: '1.5rem' }}>
+          <button className="btn btn-outline" style={{ width: '100%', display: 'flex', justifyContent: 'center', gap: '0.5rem' }} onClick={() => alert('Google auth coming soon!')}>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
+            Continue with Google
+          </button>
+          
+          <div className="divider">
+            <span>or use email</span>
+          </div>
+        </div>
+
         <form onSubmit={handleSubmit}>
           <div className="form-group">
             <label>Username</label>
-            <input className="form-control" type="text" value={username} onChange={e => setUsername(e.target.value)} required />
+            <input className="form-control" type="text" placeholder="Choose an alias..." value={username} onChange={e => setUsername(e.target.value)} required />
           </div>
           <div className="form-group">
             <label>Password</label>
-            <input className="form-control" type="password" value={password} onChange={e => setPassword(e.target.value)} required />
+            <input className="form-control" type="password" placeholder="••••••••" value={password} onChange={e => setPassword(e.target.value)} required />
           </div>
-          <button className="btn btn-primary" style={{ width: '100%', marginBottom: '1rem' }} type="submit">
-            {type === 'login' ? 'Login' : 'Sign Up'}
+          <button className="btn btn-primary" style={{ width: '100%', marginBottom: '1.5rem', padding: '1rem' }} type="submit">
+            {type === 'login' ? 'Login to LinkedOut' : 'Create Secure Account'}
           </button>
           
           <div style={{ textAlign: 'center', fontSize: '0.9rem', color: 'var(--text-muted)' }}>
@@ -121,7 +155,7 @@ const AuthModal = ({ type: initialType, onClose }) => {
             <button 
               type="button" 
               onClick={() => { setType(type === 'login' ? 'register' : 'login'); setError(''); }} 
-              style={{ background: 'none', color: 'var(--brand-blue)', textDecoration: 'underline' }}
+              style={{ background: 'none', color: 'var(--brand-blue)', textDecoration: 'underline', fontWeight: 'bold' }}
             >
               {type === 'login' ? 'Sign Up' : 'Login'}
             </button>
@@ -133,7 +167,7 @@ const AuthModal = ({ type: initialType, onClose }) => {
 };
 
 const SubmitForm = () => {
-  const { user, token } = useContext(AuthContext);
+  const { user, token, showToast } = useContext(AuthContext);
   const [company, setCompany] = useState('');
   const [role, setRole] = useState('');
   const [duration, setDuration] = useState('');
@@ -155,13 +189,14 @@ const SubmitForm = () => {
         headers,
         body: JSON.stringify({ company, role, duration, content, is_anonymous: isAnonymous })
       });
-      // We don't manually append to state here anymore; socket.io handles it!
+      showToast("Story published securely!");
       setCompany('');
       setRole('');
       setDuration('');
       setContent('');
     } catch (error) {
       console.error("Error submitting post:", error);
+      showToast("Failed to publish story.", "error");
     } finally {
       setIsSubmitting(false);
     }
@@ -217,7 +252,7 @@ const SubmitForm = () => {
 };
 
 const FeedItem = ({ post }) => {
-  const { user, token } = useContext(AuthContext);
+  const { user, token, showToast } = useContext(AuthContext);
   const [liked, setLiked] = useState(false);
   const [likesCount, setLikesCount] = useState(post.likes);
 
@@ -238,21 +273,23 @@ const FeedItem = ({ post }) => {
 
   const handleRepost = async () => {
     if (!user) {
-      alert("You must be logged in to repost!");
+      showToast("You must be logged in to amplify stories!", "error");
       return;
     }
-    if (window.confirm(`Repost this story from ${post.company}?`)) {
+    if (window.confirm(`Amplify this story about ${post.company}?`)) {
       try {
         await fetch(`${API_URL}/posts`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
           body: JSON.stringify({ 
-            repost_id: isRepost ? post.repost_id : post.id, // avoid nested reposts
-            is_anonymous: false // Reposts show who reposted
+            repost_id: isRepost ? post.repost_id : post.id,
+            is_anonymous: false
           })
         });
+        showToast("Story amplified!");
       } catch (err) {
         console.error("Failed to repost", err);
+        showToast("Failed to amplify.", "error");
       }
     }
   };
