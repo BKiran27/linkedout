@@ -48,43 +48,84 @@ const AuthProvider = ({ children }) => {
   );
 };
 
-// --- Shared Components ---
+// --- Icons ---
+const Icons = {
+  Home: () => <svg viewBox="0 0 24 24" aria-hidden="true" width="26" fill="currentColor"><g><path d="M12 1.696L.622 8.807l1.06 1.696L3 9.679V19.5C3 20.881 4.119 22 5.5 22h13c1.381 0 2.5-1.119 2.5-2.5V9.679l1.318.824 1.06-1.696L12 1.696zM12 16.5c-1.933 0-3.5-1.567-3.5-3.5s1.567-3.5 3.5-3.5 3.5 1.567 3.5 3.5-1.567 3.5-3.5 3.5z"></path></g></svg>,
+  Explore: () => <svg viewBox="0 0 24 24" aria-hidden="true" width="26" fill="currentColor"><g><path d="M21.53 20.47l-3.66-3.66C19.195 15.24 20 13.214 20 11c0-4.97-4.03-9-9-9s-9 4.03-9 9 4.03 9 9 9c2.215 0 4.24-.804 5.808-2.13l3.66 3.66c.147.146.34.22.53.22s.385-.073.53-.22c.295-.293.295-.767.002-1.06zM3.5 11c0-4.135 3.365-7.5 7.5-7.5s7.5 3.365 7.5 7.5-3.365 7.5-7.5 7.5-7.5-3.365-7.5-7.5z"></path></g></svg>,
+  Notifications: () => <svg viewBox="0 0 24 24" aria-hidden="true" width="26" fill="currentColor"><g><path d="M21.697 16.468c-.02-.016-2.14-1.64-2.103-6.03.02-2.532-.812-4.782-2.347-6.335C15.872 2.707 14.028 2 12 2s-3.872.707-5.247 2.103c-1.535 1.553-2.367 3.803-2.346 6.335.037 4.39-2.083 6.015-2.103 6.03-.133.107-.21.267-.21.432v2.585c0 .553.448 1.015 1 1.015h17.812c.552 0 1-.462 1-1.015v-2.585c0-.165-.077-.325-.21-.432zm-18.01 2.016v-1.1c1.558-1.503 2.92-3.834 2.894-6.852-.016-2.085.645-3.882 1.865-5.117C9.367 4.473 10.638 3.5 12 3.5s2.633.973 3.554 1.916c1.22 1.235 1.88 3.032 1.865 5.117-.026 3.018 1.336 5.349 2.894 6.852v1.1H3.687zM15 21.5c0 1.657-1.343 3-3 3s-3-1.343-3-3h6z"></path></g></svg>,
+  Profile: () => <svg viewBox="0 0 24 24" aria-hidden="true" width="26" fill="currentColor"><g><path d="M12 11.816c1.355 0 2.872-.15 3.84-1.256.814-.93 1.078-2.368.805-4.392-.38-2.825-2.117-4.512-4.645-4.512S7.735 3.343 7.355 6.168c-.273 2.024-.01 3.462.805 4.392.968 1.106 2.485 1.256 3.84 1.256zm-3.16-5.46c.216-1.613 1.196-2.7 3.16-2.7s2.944 1.087 3.16 2.7c.18 1.332-.016 2.222-.43 2.697-.482.55-1.42.72-2.73.72s-2.248-.17-2.73-.72c-.414-.475-.61-1.365-.43-2.697zM20.25 21.5c0-.986-.547-1.854-1.36-2.378-1.536-.983-3.52-1.492-6.89-1.492s-5.354.51-6.89 1.492c-.813.524-1.36 1.392-1.36 2.378H2.25c0-1.686 1.084-3.174 2.65-4.175 1.832-1.173 4.103-1.745 7.1-1.745s5.268.572 7.1 1.745c1.566 1.001 2.65 2.489 2.65 4.175h-1.5z"></path></g></svg>,
+  Comment: () => <svg viewBox="0 0 24 24" aria-hidden="true" width="18" fill="currentColor"><g><path d="M1.751 10c0-4.42 3.584-8 8.005-8h4.366c4.49 0 8.129 3.64 8.129 8.13 0 2.96-1.607 5.68-4.196 7.11l-8.054 4.46v-3.69h-.067c-4.49.1-8.183-3.51-8.183-8.01zm8.005-6c-3.317 0-6.005 2.69-6.005 6 0 3.37 2.77 6.08 6.138 6.01l.351-.01h1.761v2.3l5.087-2.81c1.951-1.08 3.163-3.13 3.163-5.36 0-3.39-2.744-6.13-6.129-6.13H9.756z"></path></g></svg>,
+  Repost: () => <svg viewBox="0 0 24 24" aria-hidden="true" width="18" fill="currentColor"><g><path d="M4.5 3.88l4.432 4.14-1.364 1.46L5.5 7.55V16c0 1.1.896 2 2 2H13v2H7.5c-2.209 0-4-1.79-4-4V7.55L1.432 9.48.068 8.02 4.5 3.88zM16.5 6H11V4h5.5c2.209 0 4 1.79 4 4v8.45l2.068-1.93 1.364 1.46-4.432 4.14-4.432-4.14 1.364-1.46 2.068 1.93V8c0-1.1-.896-2-2-2z"></path></g></svg>,
+  Heart: ({ filled }) => <svg viewBox="0 0 24 24" aria-hidden="true" width="18" fill={filled ? "#f91880" : "currentColor"}><g><path d={filled ? "M20.884 13.19c-1.351 2.48-4.001 5.12-8.379 7.67l-.503.3-.504-.3c-4.379-2.55-7.029-5.19-8.382-7.67-1.36-2.5-1.41-4.86-.514-6.67.887-1.79 2.647-2.91 4.601-3.01 1.651-.09 3.368.56 4.798 2.01 1.429-1.45 3.146-2.1 4.796-2.01 1.954.1 3.714 1.22 4.601 3.01.896 1.81.846 4.17-.514 6.67z" : "M16.697 5.5c-1.222-.06-2.679.51-3.89 2.16l-.805 1.09-.806-1.09C9.984 6.01 8.526 5.44 7.304 5.5c-1.243.07-2.349.78-2.91 1.91-.552 1.12-.633 2.78.479 4.82 1.074 1.97 3.257 4.27 7.129 6.61 3.87-2.34 6.052-4.64 7.126-6.61 1.111-2.04 1.03-3.7.477-4.82-.561-1.13-1.666-1.84-2.908-1.91zm4.187 7.69c-1.351 2.48-4.001 5.12-8.379 7.67l-.503.3-.504-.3c-4.379-2.55-7.029-5.19-8.382-7.67-1.36-2.5-1.41-4.86-.514-6.67.887-1.79 2.647-2.91 4.601-3.01 1.651-.09 3.368.56 4.798 2.01 1.429-1.45 3.146-2.1 4.796-2.01 1.954.1 3.714 1.22 4.601 3.01.896 1.81.846 4.17-.514 6.67z"}></path></g></svg>,
+  Share: () => <svg viewBox="0 0 24 24" aria-hidden="true" width="18" fill="currentColor"><g><path d="M12 2.59l5.7 5.7-1.41 1.42L13 6.41V16h-2V6.41l-3.3 3.3-1.41-1.42L12 2.59zM21 15l-.02 3.51c0 1.38-1.12 2.49-2.5 2.49H5.5C4.11 21 3 19.88 3 18.5V15h2v3.5c0 .28.22.5.5.5h12.98c.28 0 .5-.22.5-.5L19 15h2z"></path></g></svg>
+};
 
-const Header = ({ onShowAuth }) => {
+// --- Left Sidebar ---
+const LeftSidebar = ({ onShowAuth }) => {
   const { user, logout } = useContext(AuthContext);
 
   return (
-    <header className="header">
-      <div className="container header-inner">
-        <Link to="/" className="logo" style={{ textDecoration: 'none' }}>
+    <header className="sidebar-left">
+      <div className="sidebar-left-inner">
+        <Link to="/" className="sidebar-logo">
           Linked<span className="logo-accent">Out</span>
         </Link>
-        <nav style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
+        
+        <nav className="sidebar-nav">
+          <Link to="/" className="nav-item">
+            <Icons.Home />
+            <span>Home</span>
+          </Link>
+          <Link to="/" className="nav-item">
+            <Icons.Explore />
+            <span>Explore</span>
+          </Link>
+          <Link to="/" className="nav-item">
+            <Icons.Notifications />
+            <span>Notifications</span>
+          </Link>
+          <Link to="/" className="nav-item">
+            <Icons.Profile />
+            <span>Profile</span>
+          </Link>
+          
+          <button className="btn btn-primary btn-post" onClick={() => {
+            const form = document.getElementById('submit-form');
+            if (form) {
+               form.scrollIntoView({ behavior: 'smooth' });
+               document.getElementById('post-textarea').focus();
+            } else {
+               onShowAuth('login');
+            }
+          }}>
+            Expose
+          </button>
+        </nav>
+
+        <div className="sidebar-footer">
           {user ? (
-            <>
-              <span style={{ color: 'var(--text-muted)' }}>@{user.username}</span>
-              <button className="btn btn-outline" style={{ padding: '0.4rem 1rem' }} onClick={logout}>Logout</button>
-            </>
+            <div className="user-menu" onClick={() => {
+              if (window.confirm("Logout of LinkedOut?")) logout();
+            }}>
+              <div className="avatar">{user.username.charAt(0).toUpperCase()}</div>
+              <div className="user-details-nav">
+                <span className="fullname">{user.username}</span>
+                <span className="handle">@{user.username}</span>
+              </div>
+            </div>
           ) : (
-            <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
-              <button className="btn" style={{ padding: '0.4rem 1rem', background: 'transparent', color: 'var(--text-primary)', border: 'none' }} onClick={() => onShowAuth('login')}>Log In</button>
-              <button className="btn btn-primary" style={{ padding: '0.4rem 1rem' }} onClick={() => onShowAuth('register')}>Sign Up</button>
+            <div className="auth-buttons">
+              <button className="btn btn-outline" onClick={() => onShowAuth('login')}>Log In</button>
+              <button className="btn btn-primary" onClick={() => onShowAuth('register')}>Sign Up</button>
             </div>
           )}
-          <Link to="/" className="btn btn-danger" onClick={() => {
-            setTimeout(() => {
-              const form = document.getElementById('submit-form');
-              if (form) form.scrollIntoView({ behavior: 'smooth' });
-            }, 100);
-          }}>
-            Expose a Company
-          </Link>
-        </nav>
+        </div>
       </div>
     </header>
   );
 };
 
+// --- Modals & Auth ---
 const AuthModal = ({ type: initialType, onClose }) => {
   const [type, setType] = useState(initialType);
   const [username, setUsername] = useState('');
@@ -180,11 +221,11 @@ const AuthModal = ({ type: initialType, onClose }) => {
   );
 };
 
+// --- Feed & Posts ---
 const SubmitForm = () => {
   const { user, token, showToast } = useContext(AuthContext);
   const [company, setCompany] = useState('');
   const [role, setRole] = useState('');
-  const [duration, setDuration] = useState('');
   const [content, setContent] = useState('');
   const [isAnonymous, setIsAnonymous] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -201,12 +242,11 @@ const SubmitForm = () => {
       await fetch(`${API_URL}/posts`, {
         method: 'POST',
         headers,
-        body: JSON.stringify({ company, role, duration, content, is_anonymous: isAnonymous })
+        body: JSON.stringify({ company, role, content, is_anonymous: isAnonymous })
       });
       showToast("Story published securely!");
       setCompany('');
       setRole('');
-      setDuration('');
       setContent('');
     } catch (error) {
       console.error("Error submitting post:", error);
@@ -217,49 +257,36 @@ const SubmitForm = () => {
   };
 
   return (
-    <div id="submit-form" className="glass-panel submit-form animate-fade-in" style={{ animationDelay: '0.2s' }}>
-      <h2 style={{ marginBottom: '1.5rem', color: 'var(--brand-blue)' }}>Share Your Story</h2>
-      <form onSubmit={handleSubmit}>
-        <div className="form-group">
-          <label>Company Name</label>
-          <input 
-            type="text" 
-            className="form-control" 
-            placeholder="Which company are you leaving?" 
-            value={company}
-            onChange={e => setCompany(e.target.value)}
-            required
-          />
-        </div>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
-          <div className="form-group">
-            <label>Your Role (Optional)</label>
-            <input type="text" className="form-control" placeholder="e.g. Software Engineer" value={role} onChange={e => setRole(e.target.value)} />
-          </div>
-          <div className="form-group">
-            <label>Duration (Optional)</label>
-            <input type="text" className="form-control" placeholder="e.g. 2 years" value={duration} onChange={e => setDuration(e.target.value)} />
-          </div>
-        </div>
-        <div className="form-group">
-          <label>The Real Reason</label>
-          <textarea 
-            className="form-control" 
-            placeholder="What actually happened? Be honest." 
-            value={content}
-            onChange={e => setContent(e.target.value)}
-            required
-          ></textarea>
+    <div id="submit-form" className="submit-tweet-box">
+      <div className="submit-avatar">
+        {user ? user.username.charAt(0).toUpperCase() : 'A'}
+      </div>
+      <form onSubmit={handleSubmit} className="submit-form-inner">
+        <textarea 
+          id="post-textarea"
+          className="composer-input" 
+          placeholder="What's toxic at work?" 
+          value={content}
+          onChange={e => setContent(e.target.value)}
+          required
+        ></textarea>
+        
+        <div className="composer-metadata">
+          <input type="text" className="composer-meta-input" placeholder="Company Name (Required)" value={company} onChange={e => setCompany(e.target.value)} required />
+          <input type="text" className="composer-meta-input" placeholder="Your Role (Optional)" value={role} onChange={e => setRole(e.target.value)} />
         </div>
         
-        <div className="form-group" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-          <input type="checkbox" id="anonToggle" checked={isAnonymous} onChange={e => setIsAnonymous(e.target.checked)} />
-          <label htmlFor="anonToggle" style={{ margin: 0 }}>Post Anonymously {user && !isAnonymous ? `(as @${user.username})` : ''}</label>
+        <div className="composer-footer">
+          <div className="composer-options">
+            <label className="anon-toggle">
+              <input type="checkbox" checked={isAnonymous} onChange={e => setIsAnonymous(e.target.checked)} />
+              <span>Post Anonymously</span>
+            </label>
+          </div>
+          <button type="submit" className="btn btn-primary" disabled={isSubmitting || !content || !company} style={{ padding: '0.4rem 1rem' }}>
+            {isSubmitting ? 'Posting...' : 'Expose'}
+          </button>
         </div>
-
-        <button type="submit" className="btn btn-danger" style={{ width: '100%' }} disabled={isSubmitting}>
-          {isSubmitting ? 'Publishing...' : 'Publish'}
-        </button>
       </form>
     </div>
   );
@@ -272,8 +299,10 @@ const FeedItem = ({ post }) => {
 
   const isRepost = !!post.repost_id;
   const displayName = post.is_anonymous ? post.author : (post.real_username || post.author);
+  const handle = `@${displayName.toLowerCase().replace(/\s/g, '')}`;
 
-  const handleLike = async () => {
+  const handleLike = async (e) => {
+    e.stopPropagation();
     if (liked) return;
     setLiked(true);
     setLikesCount(prev => prev + 1);
@@ -285,7 +314,8 @@ const FeedItem = ({ post }) => {
     }
   };
 
-  const handleRepost = async () => {
+  const handleRepost = async (e) => {
+    e.stopPropagation();
     if (!user) {
       showToast("You must be logged in to amplify stories!", "error");
       return;
@@ -308,71 +338,69 @@ const FeedItem = ({ post }) => {
     }
   };
 
-  // If this is a repost, we display it slightly differently
-  if (isRepost) {
-    return (
-      <article className="glass-panel post-card animate-fade-in" style={{ border: '1px solid var(--brand-blue)' }}>
-        <div style={{ color: 'var(--text-muted)', fontSize: '0.85rem', marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m17 2 4 4-4 4"/><path d="M3 11v-1a4 4 0 0 1 4-4h14"/><path d="m7 22-4-4 4-4"/><path d="M21 13v1a4 4 0 0 1-4 4H3"/></svg>
-          {displayName} amplified this story
-        </div>
-        
-        {/* We would render the original post details here. For MVP we'll just show a simplified version */}
-        <div style={{ padding: '1rem', background: 'rgba(0,0,0,0.2)', borderRadius: 'var(--radius-md)' }}>
-           <div className="post-header">
-            <span className="company-tag">{post.company || 'Unknown Company'}</span>
-          </div>
-          <div className="post-content" style={{ fontStyle: 'italic' }}>
-             "See original post in database..."
-          </div>
-        </div>
-      </article>
-    );
-  }
-
   return (
-    <article className="glass-panel post-card animate-fade-in">
-      <div className="post-header">
-        <div className="user-info">
-          <div className="avatar">
-            {displayName.charAt(0).toUpperCase()}
+    <article className="tweet-card animate-fade-in">
+      {isRepost && (
+        <div className="tweet-context">
+          <Icons.Repost />
+          <span>{displayName} amplified this</span>
+        </div>
+      )}
+      
+      <div className="tweet-body">
+        <div className="tweet-avatar">
+          {displayName.charAt(0).toUpperCase()}
+        </div>
+        <div className="tweet-content-area">
+          <div className="tweet-header">
+            <span className="tweet-display-name">{displayName}</span>
+            <span className="tweet-handle">{handle}</span>
+            <span className="tweet-dot">·</span>
+            <Link to={`/company/${encodeURIComponent(post.company)}`} className="tweet-company-tag">
+              #{post.company.replace(/\s/g, '')}
+            </Link>
           </div>
-          <div className="user-details">
-            <h3>{displayName}</h3>
-            <span>{post.role} • {post.duration}</span>
+          
+          {post.role && <div className="tweet-role">{post.role}</div>}
+          
+          <div className="tweet-text">
+            {isRepost ? (
+               <div className="quoted-tweet">
+                  <div className="tweet-header">
+                    <span className="tweet-company-tag">#{post.company.replace(/\s/g, '')}</span>
+                  </div>
+                  <div className="tweet-text" style={{ fontStyle: 'italic', marginTop: '0.5rem' }}>
+                    "See original exposé..."
+                  </div>
+               </div>
+            ) : (
+               post.content
+            )}
+          </div>
+          
+          <div className="tweet-actions">
+            <button className="tweet-action-btn action-reply">
+              <div className="icon-bg"><Icons.Comment /></div>
+            </button>
+            <button className="tweet-action-btn action-repost" onClick={handleRepost}>
+              <div className="icon-bg"><Icons.Repost /></div>
+            </button>
+            <button className={`tweet-action-btn action-like ${liked ? 'liked' : ''}`} onClick={handleLike} disabled={liked}>
+              <div className="icon-bg"><Icons.Heart filled={liked} /></div>
+              {likesCount > 0 && <span className="action-count">{likesCount}</span>}
+            </button>
+            <button className="tweet-action-btn action-share">
+              <div className="icon-bg"><Icons.Share /></div>
+            </button>
           </div>
         </div>
-        <Link to={`/company/${encodeURIComponent(post.company)}`} className="company-tag" style={{ textDecoration: 'none' }}>
-          {post.company}
-        </Link>
-      </div>
-      <div className="post-content">
-        {post.content}
-      </div>
-      <div className="post-footer">
-        <button 
-          className="action-btn" 
-          onClick={handleLike}
-          style={{ color: liked ? 'var(--toxic-red)' : '' }}
-          disabled={liked}
-        >
-          <svg width="18" height="18" viewBox="0 0 24 24" fill={liked ? "currentColor" : "none"} stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
-          </svg>
-          {likesCount} Validations
-        </button>
-        <button className="action-btn" onClick={handleRepost}>
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="m17 2 4 4-4 4"/><path d="M3 11v-1a4 4 0 0 1 4-4h14"/><path d="m7 22-4-4 4-4"/><path d="M21 13v1a4 4 0 0 1-4 4H3"/>
-          </svg>
-          Amplify
-        </button>
       </div>
     </article>
   );
 };
 
-const Leaderboard = ({ posts }) => {
+// --- Right Sidebar ---
+const RightSidebar = ({ posts }) => {
   const leaderboard = useMemo(() => {
     const counts = {};
     posts.forEach(post => {
@@ -387,32 +415,38 @@ const Leaderboard = ({ posts }) => {
       .slice(0, 5);
   }, [posts]);
 
-  if (leaderboard.length === 0) return null;
-
   return (
-    <aside className="glass-panel leaderboard-card animate-fade-in" style={{ animationDelay: '0.3s' }}>
-      <h2 className="leaderboard-title">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-          <path d="M2 20h20"></path>
-          <path d="m5 20 4-16"></path>
-          <path d="m11 20 4-12"></path>
-          <path d="m17 20 2-8"></path>
-        </svg>
-        Hall of Shame
-      </h2>
-      <ul className="leaderboard-list">
-        {leaderboard.map((company, index) => (
-          <li key={company.name} className={`leaderboard-item rank-${index + 1}`}>
-            <div className="company-rank">
-              <span className="rank-number">#{index + 1}</span>
-              <Link to={`/company/${encodeURIComponent(company.name)}`} style={{ fontWeight: '600', color: 'inherit', textDecoration: 'none' }}>
-                {company.name}
-              </Link>
-            </div>
-            <span className="toxic-score">{company.score} {company.score === 1 ? 'exposé' : 'exposés'}</span>
-          </li>
-        ))}
-      </ul>
+    <aside className="sidebar-right">
+      <div className="sidebar-right-inner">
+        <div className="search-box">
+          <svg viewBox="0 0 24 24" aria-hidden="true" width="18" fill="currentColor" style={{ marginLeft: '12px' }}><g><path d="M10.25 3.75c-3.59 0-6.5 2.91-6.5 6.5s2.91 6.5 6.5 6.5c1.795 0 3.419-.726 4.596-1.904 1.178-1.177 1.904-2.801 1.904-4.596 0-3.59-2.91-6.5-6.5-6.5zm-8.5 6.5c0-4.694 3.806-8.5 8.5-8.5s8.5 3.806 8.5 8.5c0 1.986-.682 3.815-1.824 5.262l4.781 4.781-1.414 1.414-4.781-4.781c-1.447 1.142-3.276 1.824-5.262 1.824-4.694 0-8.5-3.806-8.5-8.5z"></path></g></svg>
+          <input type="text" placeholder="Search companies..." />
+        </div>
+
+        {leaderboard.length > 0 && (
+          <div className="trends-card animate-fade-in">
+            <h2 className="trends-title">Hall of Shame</h2>
+            <ul className="trends-list">
+              {leaderboard.map((company, index) => (
+                <li key={company.name} className="trend-item">
+                  <div className="trend-meta">{index + 1} · Trending Toxic</div>
+                  <Link to={`/company/${encodeURIComponent(company.name)}`} className="trend-name">
+                    {company.name}
+                  </Link>
+                  <div className="trend-count">{company.score} exposés</div>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+
+        <div className="trends-footer">
+          <span>Terms of Service</span>
+          <span>Privacy Policy</span>
+          <span>Cookie Policy</span>
+          <span>© 2026 LinkedOut</span>
+        </div>
+      </div>
     </aside>
   );
 };
@@ -420,71 +454,19 @@ const Leaderboard = ({ posts }) => {
 // --- Pages ---
 
 const Home = ({ posts }) => (
-  <main className="main-content container">
-    <section className="hero animate-fade-in" style={{ padding: '6rem 1rem 3rem', maxWidth: '800px', margin: '0 auto', textAlign: 'center' }}>
-      <h1 style={{ fontSize: '4rem', letterSpacing: '-0.03em', lineHeight: 1.1, marginBottom: '1.5rem', background: 'linear-gradient(135deg, #fff 0%, #cbd5e1 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
-        The exit interview<br/>they never published
-      </h1>
-      <p style={{ fontSize: '1.25rem', color: 'var(--text-secondary)', lineHeight: 1.6, marginBottom: '3rem' }}>
-        LinkedOut is where people say the real reason they quit — verified, anonymised, and searchable by company. Read the truth before you sign the offer.
-        <br/><br/>
-        <span style={{ fontSize: '1rem', color: 'var(--text-muted)' }}>No employer lookups. No LinkedIn sign-in. Ever.</span>
-      </p>
-      
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '2rem', textAlign: 'center', marginBottom: '4rem' }}>
-        <div>
-          <div style={{ fontSize: '3rem', fontWeight: '800', color: 'var(--brand-blue)', lineHeight: 1 }}>62%</div>
-          <div style={{ color: 'var(--text-muted)', fontSize: '0.9rem', marginTop: '0.5rem' }}>of exits cite the manager, not the money</div>
-        </div>
-        <div>
-          <div style={{ fontSize: '3rem', fontWeight: '800', color: 'var(--brand-blue)', lineHeight: 1 }}>4.1x</div>
-          <div style={{ color: 'var(--text-muted)', fontSize: '0.9rem', marginTop: '0.5rem' }}>more detail than a public review site</div>
-        </div>
-        <div>
-          <div style={{ fontSize: '3rem', fontWeight: '800', color: 'var(--brand-blue)', lineHeight: 1 }}>0</div>
-          <div style={{ color: 'var(--text-muted)', fontSize: '0.9rem', marginTop: '0.5rem' }}>names, IPs or employers stored with your story</div>
-        </div>
-      </div>
-      
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '2rem', textAlign: 'left', marginBottom: '4rem', padding: '2rem', background: 'var(--glass-bg)', border: '1px solid var(--glass-border)', borderRadius: 'var(--radius-lg)' }}>
-        <div>
-          <h3 style={{ color: 'var(--text-primary)', marginBottom: '0.5rem' }}>Verify silently</h3>
-          <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', lineHeight: 1.5 }}>Confirm your employment with a payslip or work email. We check it, hash it, and throw the document away.</p>
-        </div>
-        <div>
-          <h3 style={{ color: 'var(--text-primary)', marginBottom: '0.5rem' }}>Write it raw</h3>
-          <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', lineHeight: 1.5 }}>Tell the exit story the way you'd tell a friend. Our redactor strips names, dates and details that could identify you.</p>
-        </div>
-        <div>
-          <h3 style={{ color: 'var(--text-primary)', marginBottom: '0.5rem' }}>Publish protected</h3>
-          <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', lineHeight: 1.5 }}>Legal review flags defamation risk before anything goes live, so your story stays sharp and stays safe.</p>
-        </div>
-      </div>
-    </section>
+  <main className="feed-column">
+    <div className="feed-header-sticky">
+      <h2>For you</h2>
+    </div>
     
-    <div className="layout-grid">
-      <div className="feed-column">
-        <SubmitForm />
-        
-        <div className="feed-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <h2>Live Feed</h2>
-          <span style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.85rem', color: 'var(--brand-blue)' }}>
-            <span className="live-indicator"></span> Real-time
-          </span>
-        </div>
-        
-        <div className="feed-list">
-          {posts.length === 0 ? (
-            <p style={{ color: 'var(--text-muted)' }}>No exposés yet. Be the first to share your story.</p>
-          ) : (
-            posts.map(post => <FeedItem key={post.id} post={post} />)
-          )}
-        </div>
-      </div>
-      
-      <div className="sidebar-column">
-        <Leaderboard posts={posts} />
-      </div>
+    <SubmitForm />
+    
+    <div className="feed-list">
+      {posts.length === 0 ? (
+        <div style={{ padding: '2rem', textAlign: 'center', color: 'var(--text-muted)' }}>No exposés yet.</div>
+      ) : (
+        posts.map(post => <FeedItem key={post.id} post={post} />)
+      )}
     </div>
   </main>
 );
@@ -501,29 +483,19 @@ const CompanyPage = () => {
   }, [companyName]);
 
   return (
-    <main className="main-content container animate-fade-in">
-      <button onClick={() => navigate(-1)} className="btn" style={{ background: 'transparent', color: 'var(--text-muted)', marginBottom: '1rem', padding: 0 }}>
-        &larr; Back
-      </button>
-      
-      <section className="hero" style={{ padding: '2rem 1rem', textAlign: 'left', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'var(--glass-bg)', borderRadius: 'var(--radius-lg)', border: '1px solid var(--glass-border)' }}>
+    <main className="feed-column animate-fade-in">
+      <div className="feed-header-sticky" style={{ display: 'flex', alignItems: 'center', gap: '1.5rem' }}>
+        <button onClick={() => navigate(-1)} className="back-btn">
+          <svg viewBox="0 0 24 24" aria-hidden="true" width="20" fill="currentColor"><g><path d="M7.414 13l5.043 5.04-1.414 1.42L3.586 12l7.457-7.46 1.414 1.42L7.414 11H21v2H7.414z"></path></g></svg>
+        </button>
         <div>
-          <span style={{ color: 'var(--text-muted)', textTransform: 'uppercase', fontSize: '0.85rem', fontWeight: 'bold', letterSpacing: '1px' }}>Company Profile</span>
-          <h1 style={{ fontSize: '2.5rem', marginBottom: '0.5rem', color: 'var(--text-primary)', WebkitTextFillColor: 'initial', background: 'none' }}>{companyName}</h1>
-          <p style={{ color: 'var(--text-secondary)', margin: 0 }}>Read what former employees have to say.</p>
+          <h2 style={{ fontSize: '1.2rem', margin: 0 }}>{companyName}</h2>
+          <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>{posts.length} exposés</div>
         </div>
-        <div style={{ textAlign: 'center' }}>
-          <div style={{ fontSize: '3rem', fontWeight: '800', color: 'var(--toxic-red)', lineHeight: '1' }}>{posts.length}</div>
-          <div style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>Total Exposés</div>
-        </div>
-      </section>
+      </div>
       
-      <div className="layout-grid" style={{ marginTop: '2rem', gridTemplateColumns: '1fr' }}>
-        <div className="feed-column" style={{ maxWidth: '800px', margin: '0 auto', width: '100%' }}>
-          <div className="feed-list">
-            {posts.map(post => <FeedItem key={post.id} post={post} />)}
-          </div>
-        </div>
+      <div className="feed-list">
+        {posts.map(post => <FeedItem key={post.id} post={post} />)}
       </div>
     </main>
   );
@@ -536,12 +508,10 @@ function AppContent() {
   const [posts, setPosts] = useState([]);
 
   useEffect(() => {
-    // Initial fetch
     fetch(`${API_URL}/posts`)
       .then(res => res.json())
       .then(data => setPosts(data));
 
-    // Socket listeners for real-time
     socket.on('new_post', (newPost) => {
       setPosts(prev => [newPost, ...prev]);
     });
@@ -551,14 +521,17 @@ function AppContent() {
 
   return (
     <Router>
-      <div className="app-container">
-        <Header onShowAuth={setAuthModal} />
+      <div className="twitter-layout">
+        <LeftSidebar onShowAuth={setAuthModal} />
+        
         {authModal && <AuthModal type={authModal} onClose={() => setAuthModal(null)} />}
         
         <Routes>
           <Route path="/" element={<Home posts={posts} />} />
           <Route path="/company/:companyName" element={<CompanyPage />} />
         </Routes>
+
+        <RightSidebar posts={posts} />
       </div>
     </Router>
   );
