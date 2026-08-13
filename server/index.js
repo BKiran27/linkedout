@@ -96,6 +96,17 @@ async function initDB() {
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       )
     `);
+
+    await execute(`
+      CREATE TABLE IF NOT EXISTS comments (
+        id ${serialType} PRIMARY KEY,
+        post_id INTEGER REFERENCES posts(id),
+        user_id INTEGER REFERENCES users(id),
+        content TEXT NOT NULL,
+        is_anonymous INTEGER DEFAULT 1,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      )
+    `);
     console.log(`Connected to ${usePg ? 'PostgreSQL' : 'SQLite'} database and verified tables.`);
   } catch (err) {
     console.error('Error initializing database:', err);
@@ -219,6 +230,22 @@ app.get('/api/posts/company/:companyName', async (req, res) => {
   }
 });
 
+app.get('/api/posts/user/:username', async (req, res) => {
+  try {
+    const username = req.params.username;
+    const result = await execute(`
+      SELECT p.*, u.username as real_username 
+      FROM posts p 
+      JOIN users u ON p.user_id = u.id 
+      WHERE u.username = $1 
+      ORDER BY p.id DESC
+    `, [username]);
+    res.json(result.rows);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 app.post('/api/posts', optionalAuth, async (req, res) => {
   const { author, role, duration, company, content, is_anonymous, repost_id } = req.body;
   const user_id = req.user ? req.user.id : null;
@@ -261,6 +288,54 @@ app.post('/api/posts/:id/like', async (req, res) => {
     const id = req.params.id;
     await execute("UPDATE posts SET likes = likes + 1 WHERE id = $1", [id]);
     res.json({ message: "Post liked" });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Comments
+app.get('/api/posts/:id/comments', async (req, res) => {
+  try {
+    const id = req.params.id;
+    const result = await execute(`
+      SELECT c.*, u.username as real_username 
+      FROM comments c 
+      JOIN users u ON c.user_id = u.id 
+      WHERE c.post_id = $1 
+      ORDER BY c.created_at ASC
+    `, [id]);
+    res.json(result.rows);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.post('/api/posts/:id/comments', authenticateToken, async (req, res) => {
+  try {
+    const postId = req.params.id;
+    const { content, is_anonymous } = req.body;
+    if (!content) return res.status(400).json({ error: "Content required" });
+
+    const sql = `
+      INSERT INTO comments (post_id, user_id, content, is_anonymous) 
+      VALUES ($1, $2, $3, $4) 
+      RETURNING id
+    `;
+    const params = [postId, req.user.id, content, is_anonymous ? 1 : 0];
+    
+    const result = await execute(sql, params);
+    await execute("UPDATE posts SET comments = comments + 1 WHERE id = $1", [postId]);
+    
+    const getRes = await execute(`
+      SELECT c.*, u.username as real_username 
+      FROM comments c 
+      JOIN users u ON c.user_id = u.id 
+      WHERE c.id = $1
+    `, [result.insertId]);
+    
+    const newComment = getRes.rows[0];
+    io.emit('new_comment', newComment);
+    res.json(newComment);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

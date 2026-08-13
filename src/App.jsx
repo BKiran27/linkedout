@@ -52,26 +52,11 @@ const AuthProvider = ({ children }) => {
 const Icons = {
   Home: () => <svg viewBox="0 0 24 24" aria-hidden="true" width="26" fill="currentColor"><g><path d="M12 1.696L.622 8.807l1.06 1.696L3 9.679V19.5C3 20.881 4.119 22 5.5 22h13c1.381 0 2.5-1.119 2.5-2.5V9.679l1.318.824 1.06-1.696L12 1.696zM12 16.5c-1.933 0-3.5-1.567-3.5-3.5s1.567-3.5 3.5-3.5 3.5 1.567 3.5 3.5-1.567 3.5-3.5 3.5z"></path></g></svg>,
   Explore: () => <svg viewBox="0 0 24 24" aria-hidden="true" width="26" fill="currentColor"><g><path d="M21.53 20.47l-3.66-3.66C19.195 15.24 20 13.214 20 11c0-4.97-4.03-9-9-9s-9 4.03-9 9 4.03 9 9 9c2.215 0 4.24-.804 5.808-2.13l3.66 3.66c.147.146.34.22.53.22s.385-.073.53-.22c.295-.293.295-.767.002-1.06zM3.5 11c0-4.135 3.365-7.5 7.5-7.5s7.5 3.365 7.5 7.5-3.365 7.5-7.5 7.5-7.5-3.365-7.5-7.5z"></path></g></svg>,
-  Notifications: () => <svg viewBox="0 0 24 24" aria-hidden="true" width="26" fill="currentColor"><g><path d="M21.697 16.468c-.02-.016-2.14-1.64-2.103-6.03.02-2.532-.812-4.782-2.347-6.335C15.872 2.707 14.028 2 12 2s-3.872.707-5.247 2.103c-1.535 1.553-2.367 3.803-2.346 6.335.037 4.39-2.083 6.015-2.103 6.03-.133.107-.21.267-.21.432v2.585c0 .553.448 1.015 1 1.015h17.812c.552 0 1-.462 1-1.015v-2.585c0-.165-.077-.325-.21-.432zm-18.01 2.016v-1.1c1.558-1.503 2.92-3.834 2.894-6.852-.016-2.085.645-3.882 1.865-5.117C9.367 4.473 10.638 3.5 12 3.5s2.633.973 3.554 1.916c1.22 1.235 1.88 3.032 1.865 5.117-.026 3.018 1.336 5.349 2.894 6.852v1.1H3.687zM15 21.5c0 1.657-1.343 3-3 3s-3-1.343-3-3h6z"></path></g></svg>,
-  Messages: () => <svg viewBox="0 0 24 24" aria-hidden="true" width="26" fill="currentColor"><g><path d="M1.998 5.5c0-1.381 1.119-2.5 2.5-2.5h15c1.381 0 2.5 1.119 2.5 2.5v13c0 1.381-1.119 2.5-2.5 2.5h-15c-1.381 0-2.5-1.119-2.5-2.5v-13zm2.5-.5c-.276 0-.5.224-.5.5v2.764l8 3.638 8-3.636V5.5c0-.276-.224-.5-.5-.5h-15zm15.5 5.463l-8 3.636-8-3.638V18.5c0 .276.224.5.5.5h15c.276 0 .5-.224.5-.5v-8.037z"></path></g></svg>,
-  Lists: () => <svg viewBox="0 0 24 24" aria-hidden="true" width="26" fill="currentColor"><g><path d="M3 4.5h10.5v2H3v-2zm0 6h18.5v2H3v-2zm0 6h18.5v2H3v-2z"></path></g></svg>,
-  Bookmarks: () => <svg viewBox="0 0 24 24" aria-hidden="true" width="26" fill="currentColor"><g><path d="M4 4.5C4 3.12 5.119 2 6.5 2h11C18.881 2 20 3.12 20 4.5v18.44l-8-5.71-8 5.71V4.5zM6.5 4c-.276 0-.5.22-.5.5v14.56l6-4.29 6 4.29V4.5c0-.28-.224-.5-.5-.5h-11z"></path></g></svg>,
-  Communities: () => <svg viewBox="0 0 24 24" aria-hidden="true" width="26" fill="currentColor"><g><path d="M12 2C6.486 2 2 6.486 2 12s4.486 10 10 10 10-4.486 10-10S17.514 2 12 2zm0 18c-4.411 0-8-3.589-8-8s3.589-8 8-8 8 3.589 8 8-3.589 8-8 8zm-2.5-11.5a2.5 2.5 0 1 1 5 0 2.5 2.5 0 0 1-5 0zm6.5 2.5h-8c-1.103 0-2 .897-2 2v2h12v-2c0-1.103-.897-2-2-2z"></path></g></svg>,
-  Premium: () => <svg viewBox="0 0 24 24" aria-hidden="true" width="26" fill="currentColor"><g><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"></path></g></svg>,
   Profile: () => <svg viewBox="0 0 24 24" aria-hidden="true" width="26" fill="currentColor"><g><path d="M12 11.816c1.355 0 2.872-.15 3.84-1.256.814-.93 1.078-2.368.805-4.392-.38-2.825-2.117-4.512-4.645-4.512S7.735 3.343 7.355 6.168c-.273 2.024-.01 3.462.805 4.392.968 1.106 2.485 1.256 3.84 1.256zm-3.16-5.46c.216-1.613 1.196-2.7 3.16-2.7s2.944 1.087 3.16 2.7c.18 1.332-.016 2.222-.43 2.697-.482.55-1.42.72-2.73.72s-2.248-.17-2.73-.72c-.414-.475-.61-1.365-.43-2.697zM20.25 21.5c0-.986-.547-1.854-1.36-2.378-1.536-.983-3.52-1.492-6.89-1.492s-5.354.51-6.89 1.492c-.813.524-1.36 1.392-1.36 2.378H2.25c0-1.686 1.084-3.174 2.65-4.175 1.832-1.173 4.103-1.745 7.1-1.745s5.268.572 7.1 1.745c1.566 1.001 2.65 2.489 2.65 4.175h-1.5z"></path></g></svg>,
-  More: () => <svg viewBox="0 0 24 24" aria-hidden="true" width="26" fill="currentColor"><g><path d="M12 14c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm7 0c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zM5 14c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2z"></path></g></svg>,
   Comment: () => <svg viewBox="0 0 24 24" aria-hidden="true" width="18" fill="currentColor"><g><path d="M1.751 10c0-4.42 3.584-8 8.005-8h4.366c4.49 0 8.129 3.64 8.129 8.13 0 2.96-1.607 5.68-4.196 7.11l-8.054 4.46v-3.69h-.067c-4.49.1-8.183-3.51-8.183-8.01zm8.005-6c-3.317 0-6.005 2.69-6.005 6 0 3.37 2.77 6.08 6.138 6.01l.351-.01h1.761v2.3l5.087-2.81c1.951-1.08 3.163-3.13 3.163-5.36 0-3.39-2.744-6.13-6.129-6.13H9.756z"></path></g></svg>,
   Repost: () => <svg viewBox="0 0 24 24" aria-hidden="true" width="18" fill="currentColor"><g><path d="M4.5 3.88l4.432 4.14-1.364 1.46L5.5 7.55V16c0 1.1.896 2 2 2H13v2H7.5c-2.209 0-4-1.79-4-4V7.55L1.432 9.48.068 8.02 4.5 3.88zM16.5 6H11V4h5.5c2.209 0 4 1.79 4 4v8.45l2.068-1.93 1.364 1.46-4.432 4.14-4.432-4.14 1.364-1.46 2.068 1.93V8c0-1.1-.896-2-2-2z"></path></g></svg>,
   Heart: ({ filled }) => <svg viewBox="0 0 24 24" aria-hidden="true" width="18" fill={filled ? "#f91880" : "currentColor"}><g><path d={filled ? "M20.884 13.19c-1.351 2.48-4.001 5.12-8.379 7.67l-.503.3-.504-.3c-4.379-2.55-7.029-5.19-8.382-7.67-1.36-2.5-1.41-4.86-.514-6.67.887-1.79 2.647-2.91 4.601-3.01 1.651-.09 3.368.56 4.798 2.01 1.429-1.45 3.146-2.1 4.796-2.01 1.954.1 3.714 1.22 4.601 3.01.896 1.81.846 4.17-.514 6.67z" : "M16.697 5.5c-1.222-.06-2.679.51-3.89 2.16l-.805 1.09-.806-1.09C9.984 6.01 8.526 5.44 7.304 5.5c-1.243.07-2.349.78-2.91 1.91-.552 1.12-.633 2.78.479 4.82 1.074 1.97 3.257 4.27 7.129 6.61 3.87-2.34 6.052-4.64 7.126-6.61 1.111-2.04 1.03-3.7.477-4.82-.561-1.13-1.666-1.84-2.908-1.91zm4.187 7.69c-1.351 2.48-4.001 5.12-8.379 7.67l-.503.3-.504-.3c-4.379-2.55-7.029-5.19-8.382-7.67-1.36-2.5-1.41-4.86-.514-6.67.887-1.79 2.647-2.91 4.601-3.01 1.651-.09 3.368.56 4.798 2.01 1.429-1.45 3.146-2.1 4.796-2.01 1.954.1 3.714 1.22 4.601 3.01.896 1.81.846 4.17-.514 6.67z"}></path></g></svg>,
-  Share: () => <svg viewBox="0 0 24 24" aria-hidden="true" width="18" fill="currentColor"><g><path d="M12 2.59l5.7 5.7-1.41 1.42L13 6.41V16h-2V6.41l-3.3 3.3-1.41-1.42L12 2.59zM21 15l-.02 3.51c0 1.38-1.12 2.49-2.5 2.49H5.5C4.11 21 3 19.88 3 18.5V15h2v3.5c0 .28.22.5.5.5h12.98c.28 0 .5-.22.5-.5L19 15h2z"></path></g></svg>,
-  Analytics: () => <svg viewBox="0 0 24 24" aria-hidden="true" width="18" fill="currentColor"><g><path d="M8.75 21V3h2v18h-2zM18 21V8.5h2V21h-2zM4 21l.004-10h2L6 21H4zm9.248 0v-7h2v7h-2z"></path></g></svg>,
-  ActionBookmark: () => <svg viewBox="0 0 24 24" aria-hidden="true" width="18" fill="currentColor"><g><path d="M4 4.5C4 3.12 5.119 2 6.5 2h11C18.881 2 20 3.12 20 4.5v18.44l-8-5.71-8 5.71V4.5zM6.5 4c-.276 0-.5.22-.5.5v14.56l6-4.29 6 4.29V4.5c0-.28-.224-.5-.5-.5h-11z"></path></g></svg>,
-  Image: () => <svg viewBox="0 0 24 24" aria-hidden="true" width="20" fill="var(--brand-blue)"><g><path d="M3 5.5C3 4.119 4.119 3 5.5 3h13C19.881 3 21 4.119 21 5.5v13c0 1.381-1.119 2.5-2.5 2.5h-13C4.119 21 3 19.881 3 18.5v-13zM5.5 5c-.276 0-.5.224-.5.5v9.086l3-3 3 3 5-5 3 3V5.5c0-.276-.224-.5-.5-.5h-13zM19 15.414l-3-3-5 5-3-3-3 3V18.5c0 .276.224.5.5.5h13c.276 0 .5-.224.5-.5v-3.086zM9.75 7C8.784 7 8 7.784 8 8.75s.784 1.75 1.75 1.75 1.75-.784 1.75-1.75S10.716 7 9.75 7z"></path></g></svg>,
-  Gif: () => <svg viewBox="0 0 24 24" aria-hidden="true" width="20" fill="var(--brand-blue)"><g><path d="M3 5.5C3 4.119 4.119 3 5.5 3h13C19.881 3 21 4.119 21 5.5v13c0 1.381-1.119 2.5-2.5 2.5h-13C4.119 21 3 19.881 3 18.5v-13zM5.5 5c-.276 0-.5.224-.5.5v13c0 .276.224.5.5.5h13c.276 0 .5-.224.5-.5v-13c0-.276-.224-.5-.5-.5h-13zM7 14.5c0-.828.672-1.5 1.5-1.5H10v-2H8.5V9.5h3V11h-1.5v2H11v1.5H8.5c-1.657 0-3-1.343-3-3V9.5c0-1.657 1.343-3 3-3h3V8H8.5c-.828 0-1.5.672-1.5 1.5v3c0 .828.672 1.5 1.5 1.5H11v2H8.5c-1.657 0-3-1.343-3-3zm4.5-5h1.5v5H11.5v-5zm3.5 0h3V11h-1.5v3h-1.5V9.5z"></path></g></svg>,
-  Poll: () => <svg viewBox="0 0 24 24" aria-hidden="true" width="20" fill="var(--brand-blue)"><g><path d="M19 4H5C3.343 4 2 5.343 2 7v10c0 1.657 1.343 3 3 3h14c1.657 0 3-1.343 3-3V7c0-1.657-1.343-3-3-3zm1 10c0 .552-.448 1-1 1H5c-.552 0-1-.448-1-1V7c0-.552.448-1 1-1h14c.552 0 1 .448 1 1v10zm-3-5h-3c-.552 0-1 .448-1 1v4c0 .552.448 1 1 1h3c.552 0 1-.448 1-1v-4c0-.552-.448-1-1-1zm-1 4h-1v-2h1v2zm-6-2H7c-.552 0-1 .448-1 1v2c0 .552.448 1 1 1h3c.552 0 1-.448 1-1v-2c0-.552-.448-1-1-1zm-1 2H8v-2h1v2z"></path></g></svg>,
-  Emoji: () => <svg viewBox="0 0 24 24" aria-hidden="true" width="20" fill="var(--brand-blue)"><g><path d="M12 2C6.486 2 2 6.486 2 12s4.486 10 10 10 10-4.486 10-10S17.514 2 12 2zm0 18c-4.411 0-8-3.589-8-8s3.589-8 8-8 8 3.589 8 8-3.589 8-8 8zm3.5-10.5c0 .828-.672 1.5-1.5 1.5s-1.5-.672-1.5-1.5S13.172 8 14 8s1.5.672 1.5 1.5zm-5 0c0 .828-.672 1.5-1.5 1.5S6 11.328 6 10.5 6.672 9 7.5 9s1.5.672 1.5 1.5zm1.25 4.542c-1.362 0-2.617.584-3.513 1.564-.325.356-.299.907.057 1.232.355.324.907.299 1.231-.057.564-.617 1.353-1 2.225-1s1.662.383 2.226 1c.325.355.875.381 1.231.057.356-.325.382-.876.057-1.232-.897-.98-2.152-1.564-3.514-1.564z"></path></g></svg>,
-  Schedule: () => <svg viewBox="0 0 24 24" aria-hidden="true" width="20" fill="var(--brand-blue)"><g><path d="M14 6V3h2v3h4c1.1 0 2 .9 2 2v13c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V8c0-1.1.9-2 2-2h4V3h2v3h4zm6 4H4v11h16V10zm-9 3v4c0 .55-.45 1-1 1s-1-.45-1-1v-4c0-.55.45-1 1-1s1 .45 1 1zm5 0v4c0 .55-.45 1-1 1s-1-.45-1-1v-4c0-.55.45-1 1-1s1 .45 1 1z"></path></g></svg>,
-  Location: () => <svg viewBox="0 0 24 24" aria-hidden="true" width="20" fill="var(--brand-blue)"><g><path d="M12 2C7.589 2 4 5.589 4 9.995 3.971 16.44 11.696 21.784 12 22c0 0 8.029-5.56 8-12.005C20 5.589 16.411 2 12 2zm0 17.582C9.516 17.387 6 12.87 6 9.995 6 6.69 8.691 4 12 4s6 2.691 6 5.995c0 2.875-3.516 7.392-6 9.587zM12 7.5c-1.378 0-2.5 1.121-2.5 2.5s1.122 2.5 2.5 2.5 2.5-1.121 2.5-2.5-1.122-2.5-2.5-2.5zm0 3.5c-.552 0-1-.449-1-1s.448-1 1-1 1 .449 1 1-.448 1-1 1z"></path></g></svg>
+  Share: () => <svg viewBox="0 0 24 24" aria-hidden="true" width="18" fill="currentColor"><g><path d="M12 2.59l5.7 5.7-1.41 1.42L13 6.41V16h-2V6.41l-3.3 3.3-1.41-1.42L12 2.59zM21 15l-.02 3.51c0 1.38-1.12 2.49-2.5 2.49H5.5C4.11 21 3 19.88 3 18.5V15h2v3.5c0 .28.22.5.5.5h12.98c.28 0 .5-.22.5-.5L19 15h2z"></path></g></svg>
 };
 
 // --- Left Sidebar ---
@@ -94,38 +79,12 @@ const LeftSidebar = ({ onShowAuth }) => {
             <Icons.Explore />
             <span>Explore</span>
           </Link>
-          <Link to="/" className="nav-item">
-            <Icons.Notifications />
-            <span>Notifications</span>
-          </Link>
-          <Link to="/" className="nav-item">
-            <Icons.Messages />
-            <span>Messages</span>
-          </Link>
-          <Link to="/" className="nav-item">
-            <Icons.Lists />
-            <span>Lists</span>
-          </Link>
-          <Link to="/" className="nav-item">
-            <Icons.Bookmarks />
-            <span>Bookmarks</span>
-          </Link>
-          <Link to="/" className="nav-item">
-            <Icons.Communities />
-            <span>Communities</span>
-          </Link>
-          <Link to="/" className="nav-item">
-            <Icons.Premium />
-            <span>Premium</span>
-          </Link>
-          <Link to="/" className="nav-item">
-            <Icons.Profile />
-            <span>Profile</span>
-          </Link>
-          <Link to="/" className="nav-item">
-            <Icons.More />
-            <span>More</span>
-          </Link>
+          {user && (
+            <Link to={`/profile/${user.username}`} className="nav-item">
+              <Icons.Profile />
+              <span>Profile</span>
+            </Link>
+          )}
           
           <button className="btn btn-primary btn-post" onClick={() => {
             const form = document.getElementById('submit-form');
@@ -315,15 +274,6 @@ const SubmitForm = () => {
         </div>
         
         <div className="composer-footer">
-          <div className="composer-toolbar" style={{ display: 'flex', gap: '8px', cursor: 'pointer' }}>
-            <div title="Media"><Icons.Image /></div>
-            <div title="GIF"><Icons.Gif /></div>
-            <div title="Poll"><Icons.Poll /></div>
-            <div title="Emoji"><Icons.Emoji /></div>
-            <div title="Schedule"><Icons.Schedule /></div>
-            <div title="Location"><Icons.Location /></div>
-          </div>
-          
           <div className="composer-options" style={{ marginLeft: 'auto', marginRight: '16px' }}>
             <label className="anon-toggle">
               <input type="checkbox" checked={isAnonymous} onChange={e => setIsAnonymous(e.target.checked)} />
@@ -343,10 +293,60 @@ const FeedItem = ({ post }) => {
   const { user, token, showToast } = useContext(AuthContext);
   const [liked, setLiked] = useState(false);
   const [likesCount, setLikesCount] = useState(post.likes);
+  const [commentsCount, setCommentsCount] = useState(post.comments || 0);
+  
+  const [showComments, setShowComments] = useState(false);
+  const [comments, setComments] = useState([]);
+  const [newComment, setNewComment] = useState('');
+  const [isAnonymousComment, setIsAnonymousComment] = useState(true);
 
   const isRepost = !!post.repost_id;
   const displayName = post.is_anonymous ? post.author : (post.real_username || post.author);
   const handle = `@${displayName.toLowerCase().replace(/\s/g, '')}`;
+
+  useEffect(() => {
+    const handleNewComment = (comment) => {
+      if (comment.post_id === post.id) {
+        setComments(prev => [...prev, comment]);
+        setCommentsCount(prev => prev + 1);
+      }
+    };
+    socket.on('new_comment', handleNewComment);
+    return () => socket.off('new_comment', handleNewComment);
+  }, [post.id]);
+
+  const fetchComments = async () => {
+    if (showComments) {
+      setShowComments(false);
+      return;
+    }
+    try {
+      const res = await fetch(`${API_URL}/posts/${post.id}/comments`);
+      const data = await res.json();
+      setComments(data);
+      setShowComments(true);
+    } catch (err) {
+      showToast("Failed to load comments", "error");
+    }
+  };
+
+  const handlePostComment = async (e) => {
+    e.preventDefault();
+    if (!user) return showToast("Log in to comment", "error");
+    if (!newComment.trim()) return;
+
+    try {
+      await fetch(`${API_URL}/posts/${post.id}/comments`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+        body: JSON.stringify({ content: newComment, is_anonymous: isAnonymousComment })
+      });
+      setNewComment('');
+      showToast("Comment posted!");
+    } catch (err) {
+      showToast("Failed to post comment", "error");
+    }
+  };
 
   const handleLike = async (e) => {
     e.stopPropagation();
@@ -379,10 +379,16 @@ const FeedItem = ({ post }) => {
         });
         showToast("Story amplified!");
       } catch (err) {
-        console.error("Failed to repost", err);
         showToast("Failed to amplify.", "error");
       }
     }
+  };
+
+  const handleShare = (e) => {
+    e.stopPropagation();
+    const link = `${window.location.origin}/company/${encodeURIComponent(post.company)}`;
+    navigator.clipboard.writeText(link);
+    showToast("Link copied to clipboard!");
   };
 
   return (
@@ -426,8 +432,9 @@ const FeedItem = ({ post }) => {
           </div>
           
           <div className="tweet-actions">
-            <button className="tweet-action-btn action-reply" title="Reply">
+            <button className="tweet-action-btn action-reply" title="Reply" onClick={fetchComments}>
               <div className="icon-bg"><Icons.Comment /></div>
+              {commentsCount > 0 && <span className="action-count">{commentsCount}</span>}
             </button>
             <button className="tweet-action-btn action-repost" onClick={handleRepost} title="Amplify">
               <div className="icon-bg"><Icons.Repost /></div>
@@ -436,18 +443,48 @@ const FeedItem = ({ post }) => {
               <div className="icon-bg"><Icons.Heart filled={liked} /></div>
               {likesCount > 0 && <span className="action-count">{likesCount}</span>}
             </button>
-            <button className="tweet-action-btn action-share" title="View Analytics">
-              <div className="icon-bg"><Icons.Analytics /></div>
+            <button className="tweet-action-btn action-share" title="Share" onClick={handleShare}>
+              <div className="icon-bg"><Icons.Share /></div>
             </button>
-            <div style={{ display: 'flex', gap: '8px' }}>
-              <button className="tweet-action-btn action-share" title="Bookmark">
-                <div className="icon-bg"><Icons.ActionBookmark /></div>
-              </button>
-              <button className="tweet-action-btn action-share" title="Share">
-                <div className="icon-bg"><Icons.Share /></div>
-              </button>
-            </div>
           </div>
+
+          {/* Comment Thread UI */}
+          {showComments && (
+            <div className="comments-section" style={{ marginTop: '16px', borderTop: '1px solid var(--border-color)', paddingTop: '16px' }}>
+              {comments.map(c => {
+                const cName = c.is_anonymous ? 'Anonymous Coworker' : c.real_username;
+                return (
+                  <div key={c.id} style={{ display: 'flex', gap: '8px', marginBottom: '12px' }}>
+                    <div className="tweet-avatar" style={{ width: '30px', height: '30px', fontSize: '0.9rem' }}>
+                      {cName.charAt(0).toUpperCase()}
+                    </div>
+                    <div style={{ flex: 1, backgroundColor: 'rgba(255,255,255,0.03)', padding: '8px 12px', borderRadius: '8px' }}>
+                      <div className="tweet-header" style={{ fontSize: '0.85rem' }}>
+                        <span className="tweet-display-name">{cName}</span>
+                      </div>
+                      <div className="tweet-text" style={{ fontSize: '0.9rem', marginTop: '2px' }}>{c.content}</div>
+                    </div>
+                  </div>
+                )
+              })}
+              
+              <form onSubmit={handlePostComment} style={{ display: 'flex', gap: '8px', marginTop: '12px', alignItems: 'center' }}>
+                <input 
+                  type="text" 
+                  placeholder="Post a reply..." 
+                  className="composer-meta-input" 
+                  value={newComment} 
+                  onChange={e => setNewComment(e.target.value)} 
+                  required
+                />
+                <label className="anon-toggle" style={{ fontSize: '0.75rem' }}>
+                  <input type="checkbox" checked={isAnonymousComment} onChange={e => setIsAnonymousComment(e.target.checked)} />
+                  Anon
+                </label>
+                <button type="submit" className="btn btn-primary" style={{ padding: '0.3rem 0.8rem', fontSize: '0.85rem' }}>Reply</button>
+              </form>
+            </div>
+          )}
         </div>
       </div>
     </article>
@@ -582,6 +619,40 @@ const CompanyPage = () => {
   );
 };
 
+const ProfilePage = () => {
+  const { username } = useParams();
+  const navigate = useNavigate();
+  const [posts, setPosts] = useState([]);
+  
+  useEffect(() => {
+    fetch(`${API_URL}/posts/user/${encodeURIComponent(username)}`)
+      .then(res => res.json())
+      .then(data => setPosts(data));
+  }, [username]);
+
+  return (
+    <main className="feed-column animate-fade-in">
+      <div className="feed-header-sticky" style={{ display: 'flex', alignItems: 'center', gap: '1.5rem' }}>
+        <button onClick={() => navigate(-1)} className="back-btn">
+          <svg viewBox="0 0 24 24" aria-hidden="true" width="20" fill="currentColor"><g><path d="M7.414 13l5.043 5.04-1.414 1.42L3.586 12l7.457-7.46 1.414 1.42L7.414 11H21v2H7.414z"></path></g></svg>
+        </button>
+        <div>
+          <h2 style={{ fontSize: '1.2rem', margin: 0 }}>{username}</h2>
+          <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>{posts.length} actions taken</div>
+        </div>
+      </div>
+      
+      <div className="feed-list">
+        {posts.length === 0 ? (
+           <div style={{ padding: '2rem', textAlign: 'center', color: 'var(--text-muted)' }}>This user hasn't posted anything yet.</div>
+        ) : (
+           posts.map(post => <FeedItem key={post.id} post={post} />)
+        )}
+      </div>
+    </main>
+  );
+};
+
 // --- App Container ---
 
 function AppContent() {
@@ -610,6 +681,7 @@ function AppContent() {
         <Routes>
           <Route path="/" element={<Home posts={posts} />} />
           <Route path="/company/:companyName" element={<CompanyPage />} />
+          <Route path="/profile/:username" element={<ProfilePage />} />
         </Routes>
 
         <RightSidebar posts={posts} />
