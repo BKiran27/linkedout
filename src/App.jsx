@@ -10,7 +10,7 @@ const AuthContext = createContext();
 
 // --- Icons ---
 const Icons = {
-  Logo: () => <svg viewBox="0 0 24 24" aria-hidden="true" width="32" fill="var(--brand-orange)"><circle cx="12" cy="12" r="10" fill="currentColor"/><path fill="white" d="M12 6a6 6 0 100 12 6 6 0 000-12zm3 8h-2v2a1 1 0 01-2 0v-2H9a1 1 0 010-2h2v-2a1 1 0 012 0v2h2a1 1 0 010 2z"/></svg>,
+  Logo: () => <svg viewBox="0 0 24 24" aria-hidden="true" width="32" fill="var(--brand-primary)"><circle cx="12" cy="12" r="10" fill="currentColor"/><path fill="white" d="M12 6a6 6 0 100 12 6 6 0 000-12zm3 8h-2v2a1 1 0 01-2 0v-2H9a1 1 0 010-2h2v-2a1 1 0 012 0v2h2a1 1 0 010 2z"/></svg>,
   Home: () => <svg viewBox="0 0 24 24" aria-hidden="true" width="20" fill="currentColor"><path d="M20 11.205v9.295a1.5 1.5 0 01-1.5 1.5h-4.5v-6h-4v6H5.5A1.5 1.5 0 014 20.5v-9.295L12 3.5l8 7.705z"/></svg>,
   Explore: () => <svg viewBox="0 0 24 24" aria-hidden="true" width="20" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14.5v-4H8v-2h3v-3h2v3h3v2h-3v4h-2z"/></svg>,
   Upvote: ({ active }) => <svg viewBox="0 0 24 24" aria-hidden="true" width="24" fill={active ? 'var(--vote-up)' : 'currentColor'}><path d="M12 4 3 15h6v5h6v-5h6z"/></svg>,
@@ -67,10 +67,10 @@ const SidebarLeft = ({ posts }) => {
           <Icons.Explore /> Popular
         </Link>
         
-        <div className="nav-section-title" style={{ marginTop: '24px' }}>Communities</div>
+        <div className="nav-section-title" style={{ marginTop: '24px' }}>Corporations</div>
         {companies.map(c => (
           <Link key={c} to={`/company/${encodeURIComponent(c)}`} className="nav-item">
-            <span style={{ fontWeight: 'bold' }}>c/</span>{c}
+            <span style={{ fontWeight: 'bold' }}>corp/</span>{c}
           </Link>
         ))}
       </div>
@@ -85,11 +85,11 @@ const SidebarRight = ({ company }) => {
       <div className="sidebar-right-inner">
         <div className="about-card">
           <div className="about-header">
-            {company ? `About c/${company}` : 'About LinkedOut'}
+            {company ? `Corporate Dossier: corp/${company}` : 'About LinkedOut'}
           </div>
           <div className="about-body">
             {company 
-              ? `Welcome to c/${company}. This community is dedicated to anonymous discussions and exposés about working at ${company}.` 
+              ? `Welcome to the dossier on corp/${company}. This space is dedicated to anonymous discussions and exposés about working at ${company}.` 
               : 'LinkedOut is the front page of corporate accountability. Expose toxic work environments anonymously.'}
             
             <div className="about-stat">
@@ -181,7 +181,7 @@ const SubmitForm = ({ defaultCompany = '' }) => {
            <input 
              type="text" 
              className="submit-input" 
-             placeholder="Choose a community (e.g. Amazon)" 
+             placeholder="Choose a corporation (e.g. Amazon)" 
              value={company} 
              onChange={e => setCompany(e.target.value)} 
              required
@@ -338,10 +338,10 @@ const FeedItem = ({ post }) => {
       <div className="post-content">
         <div className="post-header">
           <Link to={`/company/${encodeURIComponent(post.company)}`} className="community-name">
-            c/{post.company.replace(/\s/g, '')}
+            corp/{post.company.replace(/\s/g, '')}
           </Link>
           <span className="post-author">
-            • Posted by u/{displayName} {timeAgo(post.created_at)}
+            • Posted by emp/{displayName} {timeAgo(post.created_at)}
           </span>
         </div>
         
@@ -394,7 +394,7 @@ const FeedItem = ({ post }) => {
                   </div>
                   <div className="comment-content">
                     <div className="comment-header">
-                      <span className="author">u/{cName}</span> • {timeAgo(c.created_at)}
+                      <span className="author">emp/{cName}</span> • {timeAgo(c.created_at)}
                     </div>
                     <div className="comment-body">{c.content}</div>
                   </div>
@@ -432,11 +432,11 @@ const CompanyPage = () => {
     <div className="reddit-layout" style={{ paddingTop: '0' }}>
       <main className="feed-column animate-fade-in">
         <div style={{ padding: '24px 0 16px' }}>
-          <h1 style={{ color: 'var(--text-title)' }}>c/{companyName}</h1>
+          <h1 style={{ color: 'var(--text-title)' }}>corp/{companyName}</h1>
         </div>
         <SubmitForm defaultCompany={companyName} />
         {posts.length === 0 ? (
-           <div style={{ padding: '2rem', textAlign: 'center', color: 'var(--text-muted)' }}>No posts yet for this community. Be the first!</div>
+           <div style={{ padding: '2rem', textAlign: 'center', color: 'var(--text-muted)' }}>No posts yet for this corporation. Be the first!</div>
         ) : (
            posts.map(post => <FeedItem key={post.id} post={post} />)
         )}
@@ -459,8 +459,8 @@ const ProfilePage = () => {
   return (
     <main className="feed-column animate-fade-in">
       <div style={{ padding: '24px 0 16px' }}>
-        <h1 style={{ color: 'var(--text-title)' }}>u/{username}</h1>
-        <p style={{ color: 'var(--text-muted)' }}>Overview</p>
+        <h1 style={{ color: 'var(--text-title)' }}>emp/{username}</h1>
+        <p style={{ color: 'var(--text-muted)' }}>Employee Overview</p>
       </div>
       
       {posts.length === 0 ? (
@@ -557,8 +557,8 @@ const AuthModal = ({ type, onClose }) => {
         </form>
         
         <div style={{ marginTop: '24px', textAlign: 'center', fontSize: '0.9rem' }}>
-          {isLogin ? "New to LinkedOut? " : "Already a redditor? "}
-          <span style={{ color: 'var(--brand-blue)', cursor: 'pointer', fontWeight: '700' }} onClick={() => setIsLogin(!isLogin)}>
+          {isLogin ? "New to LinkedOut? " : "Already an employee? "}
+          <span style={{ color: 'var(--brand-primary)', cursor: 'pointer', fontWeight: '700' }} onClick={() => setIsLogin(!isLogin)}>
             {isLogin ? 'SIGN UP' : 'LOG IN'}
           </span>
         </div>

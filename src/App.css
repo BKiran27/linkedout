@@ -1,19 +1,18 @@
 @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&display=swap');
 
 :root {
-  --bg-color: #030303;
-  --card-bg: #1A1A1B;
-  --card-bg-hover: #1F1F20;
-  --border-color: #343536;
+  --bg-color: #09090b;
+  --card-bg: #18181b;
+  --card-bg-hover: #27272a;
+  --border-color: #27272a;
   
-  --text-primary: #D7DADC;
-  --text-muted: #818384;
-  --text-title: #F2F2F2;
+  --text-primary: #a1a1aa;
+  --text-muted: #71717a;
+  --text-title: #f4f4f5;
   
-  --brand-orange: #FF4500;
-  --brand-blue: #0079D3;
-  --vote-up: #FF4500;
-  --vote-down: #7193FF;
+  --brand-primary: #3b82f6; /* LinkedIn-style blue */
+  --vote-up: #10b981; /* Emerald Green for Amplify */
+  --vote-down: #ef4444; /* Crimson Red for Bury */
   
   --font-main: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
 }
@@ -70,7 +69,7 @@ button {
   color: var(--text-title);
 }
 .navbar-brand .logo-icon {
-  color: var(--brand-orange);
+  color: var(--brand-primary);
 }
 
 .search-bar {
@@ -171,7 +170,7 @@ button {
   width: 38px;
   height: 38px;
   border-radius: 50%;
-  background: var(--brand-orange);
+  background: var(--brand-primary);
   color: white;
   display: flex;
   align-items: center;
@@ -349,7 +348,7 @@ button {
   border-radius: 4px;
 }
 .about-header {
-  background-color: var(--brand-blue);
+  background-color: var(--brand-primary);
   color: white;
   padding: 12px;
   font-weight: 700;
