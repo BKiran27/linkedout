@@ -341,7 +341,7 @@ const FeedItem = ({ post }) => {
             corp/{post.company.replace(/\s/g, '')}
           </Link>
           <span className="post-author">
-            • Posted by emp/{displayName} {timeAgo(post.created_at)}
+            • Posted by @{displayName} {timeAgo(post.created_at)}
           </span>
         </div>
         
@@ -394,7 +394,7 @@ const FeedItem = ({ post }) => {
                   </div>
                   <div className="comment-content">
                     <div className="comment-header">
-                      <span className="author">emp/{cName}</span> • {timeAgo(c.created_at)}
+                      <span className="author">@{cName}</span> • {timeAgo(c.created_at)}
                     </div>
                     <div className="comment-body">{c.content}</div>
                   </div>
@@ -459,7 +459,7 @@ const ProfilePage = () => {
   return (
     <main className="feed-column animate-fade-in">
       <div style={{ padding: '24px 0 16px' }}>
-        <h1 style={{ color: 'var(--text-title)' }}>emp/{username}</h1>
+        <h1 style={{ color: 'var(--text-title)' }}>@{username}</h1>
         <p style={{ color: 'var(--text-muted)' }}>Employee Overview</p>
       </div>
       
