@@ -291,11 +291,19 @@ app.post('/api/posts', optionalAuth, async (req, res) => {
   }
 });
 
-app.post('/api/posts/:id/like', async (req, res) => {
+app.post('/api/posts/:id/vote', async (req, res) => {
   try {
     const id = req.params.id;
-    await execute("UPDATE posts SET likes = likes + 1 WHERE id = $1", [id]);
-    res.json({ message: "Post liked" });
+    const { scoreChange } = req.body;
+    
+    // ensure scoreChange is a number and between -2 and 2
+    const change = parseInt(scoreChange);
+    if (isNaN(change) || change < -2 || change > 2) {
+      return res.status(400).json({ error: "Invalid scoreChange" });
+    }
+
+    await execute("UPDATE posts SET likes = likes + $1 WHERE id = $2", [change, id]);
+    res.json({ message: "Vote recorded" });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

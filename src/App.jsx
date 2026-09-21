@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext, createContext } from 'react';
-import { BrowserRouter as Router, Routes, Route, Link, useNavigate, useParams } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Link, useParams } from 'react-router-dom';
 import { io } from 'socket.io-client';
 import './App.css';
 
@@ -158,7 +158,7 @@ const SubmitForm = ({ defaultCompany = '' }) => {
     return (
       <div className="submit-box">
         <div className="submit-box-header">
-          <div className="avatar">{user ? user.username.charAt(0).toUpperCase() : '?'}</div>
+          <div className="avatar">{user && user.username ? user.username.charAt(0).toUpperCase() : '?'}</div>
           <input 
             type="text" 
             className="submit-input-fake" 
@@ -255,12 +255,26 @@ const FeedItem = ({ post }) => {
   const handleVote = async (direction, e) => {
     e.stopPropagation();
     if (voteStatus === direction) return; // Already voted this way
+    
+    let scoreChange = 0;
+    if (direction === 1) {
+      scoreChange = voteStatus === -1 ? 2 : 1;
+    } else if (direction === -1) {
+      scoreChange = voteStatus === 1 ? -2 : -1;
+    }
+
     setVoteStatus(direction);
-    setLikesCount(prev => direction === 1 ? prev + 1 : prev - 1);
+    setLikesCount(prev => prev + scoreChange);
+    
     try {
-      await fetch(`${API_URL}/posts/${post.id}/like`, { method: 'POST' });
+      await fetch(`${API_URL}/posts/${post.id}/vote`, { 
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ scoreChange })
+      });
     } catch (error) {
       // Ignore errors for UI responsiveness in MVP
+      console.error(error);
     }
   };
 
