@@ -107,6 +107,14 @@ async function initDB() {
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       )
     `);
+    
+    // Add title column if it doesn't exist (for Reddit pivot)
+    try {
+      await execute("ALTER TABLE posts ADD COLUMN title VARCHAR(255)");
+    } catch (e) {
+      // Column might already exist, ignore
+    }
+
     console.log(`Connected to ${usePg ? 'PostgreSQL' : 'SQLite'} database and verified tables.`);
   } catch (err) {
     console.error('Error initializing database:', err);
