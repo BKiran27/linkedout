@@ -113,6 +113,9 @@ async function initDB() {
       await execute("ALTER TABLE posts ADD COLUMN title VARCHAR(255)");
     } catch (e) {
       // Column might already exist, ignore
+      if (e.message.indexOf('duplicate column name') === -1) {
+         console.error('Migration error:', e.message);
+      }
     }
 
     console.log(`Connected to ${usePg ? 'PostgreSQL' : 'SQLite'} database and verified tables.`);

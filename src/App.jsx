@@ -13,8 +13,8 @@ const Icons = {
   Logo: () => <svg viewBox="0 0 24 24" aria-hidden="true" width="32" fill="var(--brand-primary)"><circle cx="12" cy="12" r="10" fill="currentColor"/><path fill="white" d="M12 6a6 6 0 100 12 6 6 0 000-12zm3 8h-2v2a1 1 0 01-2 0v-2H9a1 1 0 010-2h2v-2a1 1 0 012 0v2h2a1 1 0 010 2z"/></svg>,
   Home: () => <svg viewBox="0 0 24 24" aria-hidden="true" width="20" fill="currentColor"><path d="M20 11.205v9.295a1.5 1.5 0 01-1.5 1.5h-4.5v-6h-4v6H5.5A1.5 1.5 0 014 20.5v-9.295L12 3.5l8 7.705z"/></svg>,
   Explore: () => <svg viewBox="0 0 24 24" aria-hidden="true" width="20" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14.5v-4H8v-2h3v-3h2v3h3v2h-3v4h-2z"/></svg>,
-  Upvote: ({ active }) => <svg viewBox="0 0 24 24" aria-hidden="true" width="24" fill={active ? 'var(--vote-up)' : 'currentColor'}><path d="M12 4 3 15h6v5h6v-5h6z"/></svg>,
-  Downvote: ({ active }) => <svg viewBox="0 0 24 24" aria-hidden="true" width="24" fill={active ? 'var(--vote-down)' : 'currentColor'}><path d="M12 20 3 9h6V4h6v5h6z"/></svg>,
+  Upvote: ({ active }) => <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" fill="none" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{color: active ? 'var(--vote-up)' : 'currentColor'}}><polyline points="18 15 12 9 6 15"></polyline></svg>,
+  Downvote: ({ active }) => <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" fill="none" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{color: active ? 'var(--vote-down)' : 'currentColor'}}><polyline points="6 9 12 15 18 9"></polyline></svg>,
   Comment: () => <svg viewBox="0 0 24 24" aria-hidden="true" width="20" fill="currentColor"><path d="M12 2C6.48 2 2 5.58 2 10c0 2.65 1.57 4.95 3.96 6.27L5 21l4.22-2.11C10.09 19.34 11.02 19.5 12 19.5c5.52 0 10-3.58 10-8s-4.48-8-10-8z"/></svg>,
   Share: () => <svg viewBox="0 0 24 24" aria-hidden="true" width="20" fill="currentColor"><path d="M14 3v4.06C8.81 7.55 5 9.87 3 14c2.51-2.91 5.95-4.32 10-4.32V14l6-5.5L14 3z"/></svg>,
   User: () => <svg viewBox="0 0 24 24" aria-hidden="true" width="20" fill="currentColor"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>,
@@ -150,6 +150,7 @@ const SubmitForm = ({ defaultCompany = '' }) => {
       setExpanded(false);
       showToast("Post submitted successfully!");
     } catch (err) {
+      console.error(err);
       showToast("Failed to submit post.", "error");
     } finally {
       setIsSubmitting(false);
@@ -292,6 +293,7 @@ const FeedItem = ({ post }) => {
       setComments(data);
       setShowComments(true);
     } catch (err) {
+      console.error(err);
       showToast("Failed to load comments", "error");
     }
   };
@@ -310,6 +312,7 @@ const FeedItem = ({ post }) => {
       setNewComment('');
       showToast("Comment posted!");
     } catch (err) {
+      console.error(err);
       showToast("Failed to post comment", "error");
     }
   };

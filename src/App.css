@@ -50,14 +50,17 @@ button {
   top: 0;
   left: 0;
   right: 0;
-  height: 48px;
-  background-color: var(--card-bg);
+  height: 56px;
+  background-color: rgba(24, 24, 27, 0.85); /* Transparent card-bg */
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   border-bottom: 1px solid var(--border-color);
   display: flex;
   align-items: center;
-  padding: 0 20px;
+  padding: 0 24px;
   z-index: 100;
   justify-content: space-between;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.2);
 }
 
 .navbar-brand {
@@ -103,7 +106,7 @@ button {
   justify-content: center;
   max-width: 1000px;
   margin: 0 auto;
-  padding-top: 68px; /* 48px nav + 20px padding */
+  padding-top: 76px; /* 56px nav + 20px padding */
   gap: 24px;
 }
 
@@ -230,13 +233,16 @@ button {
 .post-card {
   background-color: var(--card-bg);
   border: 1px solid var(--border-color);
-  border-radius: 4px;
+  border-radius: 6px;
   display: flex;
-  transition: border-color 0.2s;
+  transition: all 0.2s ease;
   cursor: pointer;
+  overflow: hidden;
 }
 .post-card:hover {
   border-color: var(--text-muted);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+  transform: translateY(-1px);
 }
 
 .vote-column {
@@ -253,14 +259,21 @@ button {
 .vote-btn {
   color: var(--text-muted);
   padding: 4px;
-  border-radius: 2px;
+  border-radius: 4px;
   display: flex;
   align-items: center;
   justify-content: center;
+  transition: all 0.2s ease;
 }
 .vote-btn:hover { background-color: rgba(255,255,255,0.1); }
-.vote-btn.upvoted { color: var(--vote-up); }
-.vote-btn.downvoted { color: var(--vote-down); }
+.vote-btn.upvoted { 
+  color: var(--vote-up); 
+  filter: drop-shadow(0 0 6px rgba(16, 185, 129, 0.4));
+}
+.vote-btn.downvoted { 
+  color: var(--vote-down); 
+  filter: drop-shadow(0 0 6px rgba(239, 68, 68, 0.4));
+}
 
 .vote-score {
   font-size: 0.8rem;
@@ -416,10 +429,13 @@ button {
 .btn {
   font-weight: 700;
   border-radius: 9999px;
-  transition: background-color 0.2s, opacity 0.2s;
+  transition: all 0.2s ease;
   text-align: center;
   padding: 0.4rem 1rem;
   font-size: 0.9rem;
+}
+.btn:active:not(:disabled) {
+  transform: scale(0.97);
 }
 .btn:disabled { opacity: 0.5; cursor: not-allowed; }
 .btn-primary { background-color: var(--text-title); color: black; }
