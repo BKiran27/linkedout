@@ -680,6 +680,7 @@ const AuthProvider = ({ children }) => {
     const data = await res.json();
     if (!res.ok) throw new Error(data.error);
     setToken(data.token);
+    setUser(data.user);
     localStorage.setItem('token', data.token);
   };
 
@@ -691,6 +692,7 @@ const AuthProvider = ({ children }) => {
     const data = await res.json();
     if (!res.ok) throw new Error(data.error);
     setToken(data.token);
+    setUser(data.user);
     localStorage.setItem('token', data.token);
   };
 

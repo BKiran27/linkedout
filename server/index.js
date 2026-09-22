@@ -44,7 +44,7 @@ passport.use(new GoogleStrategy({
       
       // Password can be null or dummy since they use OAuth
       const result = await execute(
-        "INSERT INTO users (username, password, google_id) VALUES ($1, $2, $3) RETURNING id",
+        "INSERT INTO users (username, password_hash, google_id) VALUES ($1, $2, $3) RETURNING id",
         [newUsername, 'oauth_user', profile.id]
       );
       
@@ -251,6 +251,14 @@ app.post('/api/auth/login', async (req, res) => {
     res.json({ token, user: { id: user.id, username: user.username } });
   } catch (err) {
     res.status(500).json({ error: err.message });
+  }
+});
+
+app.get('/api/auth/me', optionalAuth, (req, res) => {
+  if (req.user) {
+    res.json({ id: req.user.id, username: req.user.username });
+  } else {
+    res.status(401).json({ error: 'Not authenticated' });
   }
 });
 
