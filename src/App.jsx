@@ -245,6 +245,8 @@ const FeedItem = ({ post }) => {
     return `${Math.floor(hours/24)} days ago`;
   };
 
+
+
   useEffect(() => {
     const handleNewComment = (comment) => {
       if (comment.post_id === post.id) {
@@ -550,10 +552,10 @@ const AuthModal = ({ type, onClose }) => {
         </h2>
         
         <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '24px' }}>
-           <button type="button" className="btn btn-outline" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }} onClick={() => showToast("OAuth is a premium feature. Please use username/password for this MVP.", "error")}>
+           <button type="button" className="btn btn-outline" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }} onClick={() => window.location.href = 'http://localhost:3001/auth/google'}>
               <Icons.Google /> Continue with Google
            </button>
-           <button type="button" className="btn btn-outline" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }} onClick={() => showToast("OAuth is a premium feature. Please use username/password for this MVP.", "error")}>
+           <button type="button" className="btn btn-outline" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }} onClick={() => showToast("Apple OAuth coming soon.", "error")}>
               <Icons.Apple /> Continue with Apple
            </button>
         </div>
@@ -590,7 +592,16 @@ const AuthModal = ({ type, onClose }) => {
 // --- Auth Provider ---
 const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
-  const [token, setToken] = useState(localStorage.getItem('token'));
+  const [token, setToken] = useState(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const urlToken = urlParams.get('token');
+    if (urlToken) {
+      window.history.replaceState({}, document.title, window.location.pathname);
+      localStorage.setItem('token', urlToken);
+      return urlToken;
+    }
+    return localStorage.getItem('token');
+  });
   const [toast, setToast] = useState(null);
 
   const showToast = (message, type = "success") => {

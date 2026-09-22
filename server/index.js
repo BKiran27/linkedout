@@ -5,6 +5,8 @@ const { Pool } = require('pg');
 const sqlite3 = require('sqlite3').verbose();
 const http = require('http');
 const { Server } = require('socket.io');
+const passport = require('passport');
+const GoogleStrategy = require('passport-google-oauth20').Strategy;
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
@@ -17,9 +19,58 @@ const io = new Server(server, {
 });
 app.use(cors({ origin: "*" }));
 app.use(express.json());
+const JWT_SECRET = process.env.JWT_SECRET || 'super-secret-linkedout-key';
+
+// --- Passport Configuration ---
+app.use(passport.initialize());
+
+passport.use(new GoogleStrategy({
+    clientID: process.env.GOOGLE_CLIENT_ID || 'dummy_client_id',
+    clientSecret: process.env.GOOGLE_CLIENT_SECRET || 'dummy_client_secret',
+    callbackURL: "/auth/google/callback"
+  },
+  async function(accessToken, refreshToken, profile, cb) {
+    try {
+      // Find or create user
+      const existingUser = await execute("SELECT * FROM users WHERE google_id = $1", [profile.id]);
+      if (existingUser.rows && existingUser.rows.length > 0) {
+        return cb(null, existingUser.rows[0]);
+      }
+      
+      // If user doesn't exist, create them
+      // Use their display name or email prefix as username, append random to avoid collision
+      const baseName = profile.displayName.replace(/\s+/g, '') || 'googleUser';
+      const newUsername = `${baseName}${Math.floor(Math.random() * 1000)}`;
+      
+      // Password can be null or dummy since they use OAuth
+      const result = await execute(
+        "INSERT INTO users (username, password, google_id) VALUES ($1, $2, $3) RETURNING id",
+        [newUsername, 'oauth_user', profile.id]
+      );
+      
+      const newUser = { id: result.insertId, username: newUsername, google_id: profile.id };
+      return cb(null, newUser);
+    } catch (err) {
+      return cb(err, null);
+    }
+  }
+));
+
+app.get('/auth/google',
+  passport.authenticate('google', { scope: ['profile', 'email'], session: false })
+);
+
+app.get('/auth/google/callback', 
+  passport.authenticate('google', { failureRedirect: '/login', session: false }),
+  function(req, res) {
+    // Generate JWT and redirect
+    const token = jwt.sign({ id: req.user.id, username: req.user.username }, JWT_SECRET, { expiresIn: '24h' });
+    // Redirect back to frontend with the token
+    res.redirect(`${process.env.FRONTEND_URL || 'http://localhost:5173'}?token=${token}`);
+  }
+);
 
 const port = process.env.PORT || 3001;
-const JWT_SECRET = process.env.JWT_SECRET || 'super-secret-linkedout-key';
 
 const usePg = !!process.env.DATABASE_URL;
 let pool;
@@ -112,9 +163,17 @@ async function initDB() {
     try {
       await execute("ALTER TABLE posts ADD COLUMN title VARCHAR(255)");
     } catch (e) {
-      // Column might already exist, ignore
       if (e.message.indexOf('duplicate column name') === -1) {
-         console.error('Migration error:', e.message);
+         console.error('Migration error (title):', e.message);
+      }
+    }
+
+    // Add google_id column for OAuth
+    try {
+      await execute("ALTER TABLE users ADD COLUMN google_id VARCHAR(255)");
+    } catch (e) {
+      if (e.message.indexOf('duplicate column name') === -1) {
+         console.error('Migration error (google_id):', e.message);
       }
     }
 
