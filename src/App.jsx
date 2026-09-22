@@ -32,7 +32,15 @@ const Navbar = ({ onShowAuth }) => {
         LinkedOut
       </Link>
       <div className="search-bar">
-        <input type="text" placeholder="Search LinkedOut..." />
+        <input 
+          type="text" 
+          placeholder="Search LinkedOut..." 
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' && e.target.value) {
+              window.location.href = `/search/${encodeURIComponent(e.target.value)}`;
+            }
+          }}
+        />
       </div>
       <div className="navbar-auth">
         {user ? (
@@ -416,10 +424,22 @@ const FeedItem = ({ post }) => {
 };
 
 // --- Pages ---
-const Home = ({ posts }) => {
+const SortTabs = ({ sort, setSort }) => (
+  <div className="sort-tabs">
+    <button className={`sort-tab ${sort === 'new' ? 'active' : ''}`} onClick={() => setSort('new')}>
+      ✨ New
+    </button>
+    <button className={`sort-tab ${sort === 'top' ? 'active' : ''}`} onClick={() => setSort('top')}>
+      🔥 Popular
+    </button>
+  </div>
+);
+
+const Home = ({ posts, sort, setSort }) => {
   return (
     <main className="feed-column animate-fade-in">
       <SubmitForm />
+      <SortTabs sort={sort} setSort={setSort} />
       {posts.map(post => <FeedItem key={post.id} post={post} />)}
     </main>
   );
@@ -428,12 +448,13 @@ const Home = ({ posts }) => {
 const CompanyPage = () => {
   const { companyName } = useParams();
   const [posts, setPosts] = useState([]);
+  const [sort, setSort] = useState('new');
   
   useEffect(() => {
-    fetch(`${API_URL}/posts/company/${encodeURIComponent(companyName)}`)
+    fetch(`${API_URL}/posts/company/${encodeURIComponent(companyName)}?sort=${sort}`)
       .then(res => res.json())
       .then(data => setPosts(data));
-  }, [companyName]);
+  }, [companyName, sort]);
 
   return (
     <div className="reddit-layout" style={{ paddingTop: '0' }}>
@@ -442,6 +463,7 @@ const CompanyPage = () => {
           <h1 style={{ color: 'var(--text-title)' }}>corp/{companyName}</h1>
         </div>
         <SubmitForm defaultCompany={companyName} />
+        <SortTabs sort={sort} setSort={setSort} />
         {posts.length === 0 ? (
            <div style={{ padding: '2rem', textAlign: 'center', color: 'var(--text-muted)' }}>No posts yet for this corporation. Be the first!</div>
         ) : (
@@ -479,13 +501,44 @@ const ProfilePage = () => {
   );
 };
 
+const SearchPage = () => {
+  const { query } = useParams();
+  const [posts, setPosts] = useState([]);
+  const [sort, setSort] = useState('top'); // Default to top for search
+
+  useEffect(() => {
+    fetch(`${API_URL}/posts/search?q=${encodeURIComponent(query)}&sort=${sort}`)
+      .then(res => res.json())
+      .then(data => setPosts(data));
+  }, [query, sort]);
+
+  return (
+    <div className="reddit-layout" style={{ paddingTop: '0' }}>
+      <main className="feed-column animate-fade-in">
+        <div style={{ padding: '24px 0 16px' }}>
+          <h1 style={{ color: 'var(--text-title)' }}>Search Results</h1>
+          <p style={{ color: 'var(--text-muted)' }}>Showing results for "{query}"</p>
+        </div>
+        <SortTabs sort={sort} setSort={setSort} />
+        {posts.length === 0 ? (
+           <div style={{ padding: '2rem', textAlign: 'center', color: 'var(--text-muted)' }}>No posts found for this search.</div>
+        ) : (
+           posts.map(post => <FeedItem key={post.id} post={post} />)
+        )}
+      </main>
+      <SidebarRight />
+    </div>
+  );
+};
+
 // --- App Container ---
 function AppContent() {
   const [authModal, setAuthModal] = useState(null); // 'login' or 'register'
   const [posts, setPosts] = useState([]);
+  const [sort, setSort] = useState('new');
 
   useEffect(() => {
-    fetch(`${API_URL}/posts`)
+    fetch(`${API_URL}/posts?sort=${sort}`)
       .then(res => res.json())
       .then(data => setPosts(data));
 
@@ -494,7 +547,7 @@ function AppContent() {
     });
 
     return () => socket.off('new_post');
-  }, []);
+  }, [sort]);
 
   return (
     <Router>
@@ -506,9 +559,10 @@ function AppContent() {
         {authModal && <AuthModal type={authModal} onClose={() => setAuthModal(null)} />}
         
         <Routes>
-          <Route path="/" element={<Home posts={posts} />} />
+          <Route path="/" element={<Home posts={posts} sort={sort} setSort={setSort} />} />
           <Route path="/company/:companyName" element={<CompanyPage />} />
           <Route path="/profile/:username" element={<ProfilePage />} />
+          <Route path="/search/:query" element={<SearchPage />} />
         </Routes>
 
         <Routes>

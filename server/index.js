@@ -272,13 +272,15 @@ const getPostWithDetails = async (postId) => {
 
 app.get('/api/posts', async (req, res) => {
   try {
+    const sort = req.query.sort === 'top' ? 'p.likes DESC' : 'p.id DESC';
     const result = await execute(`
-      SELECT p.*, u.username as real_username 
+      SELECT p.*, u.username as real_username,
+      (SELECT COUNT(*) FROM comments c WHERE c.post_id = p.id) as comments
       FROM posts p 
       LEFT JOIN users u ON p.user_id = u.id 
-      ORDER BY p.id DESC
+      ORDER BY ${sort}
     `);
-    res.json(result.rows);
+    res.json(result.rows || result);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -287,14 +289,16 @@ app.get('/api/posts', async (req, res) => {
 app.get('/api/posts/company/:companyName', async (req, res) => {
   try {
     const companyName = req.params.companyName;
+    const sort = req.query.sort === 'top' ? 'p.likes DESC' : 'p.id DESC';
     const result = await execute(`
-      SELECT p.*, u.username as real_username 
+      SELECT p.*, u.username as real_username,
+      (SELECT COUNT(*) FROM comments c WHERE c.post_id = p.id) as comments
       FROM posts p 
       LEFT JOIN users u ON p.user_id = u.id 
       WHERE p.company = $1 
-      ORDER BY p.id DESC
+      ORDER BY ${sort}
     `, [companyName]);
-    res.json(result.rows);
+    res.json(result.rows || result);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -304,13 +308,32 @@ app.get('/api/posts/user/:username', async (req, res) => {
   try {
     const username = req.params.username;
     const result = await execute(`
-      SELECT p.*, u.username as real_username 
+      SELECT p.*, u.username as real_username,
+      (SELECT COUNT(*) FROM comments c WHERE c.post_id = p.id) as comments
       FROM posts p 
       JOIN users u ON p.user_id = u.id 
       WHERE u.username = $1 
       ORDER BY p.id DESC
     `, [username]);
-    res.json(result.rows);
+    res.json(result.rows || result);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.get('/api/posts/search', async (req, res) => {
+  try {
+    const query = req.query.q || '';
+    const sort = req.query.sort === 'top' ? 'p.likes DESC' : 'p.id DESC';
+    const result = await execute(`
+      SELECT p.*, u.username as real_username,
+      (SELECT COUNT(*) FROM comments c WHERE c.post_id = p.id) as comments
+      FROM posts p 
+      LEFT JOIN users u ON p.user_id = u.id 
+      WHERE LOWER(p.title) LIKE LOWER($1) OR LOWER(p.content) LIKE LOWER($1) OR LOWER(p.company) LIKE LOWER($1)
+      ORDER BY ${sort}
+    `, [`%${query}%`]);
+    res.json(result.rows || result);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

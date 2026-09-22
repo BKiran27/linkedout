@@ -511,3 +511,36 @@ button {
   .sidebar-left { display: none; }
   .feed-column { width: 100%; padding: 0 16px; }
 }
+
+/* Sort Tabs */
+.sort-tabs {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 16px;
+  padding: 0 16px;
+}
+
+.sort-tab {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  font-weight: 600;
+  font-size: 0.95rem;
+  padding: 8px 16px;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.sort-tab:hover {
+  background: var(--hover-color);
+  color: var(--text-title);
+}
+
+.sort-tab.active {
+  background: var(--brand-primary);
+  color: white;
+}
